@@ -45,7 +45,7 @@ class OnboardingScreens {
         Container(
           height: 300,
           child: SvgPicture.asset(
-            'assets/your_image.svg', // Replace with your actual asset path
+            'first_onb.svg', // Replace with your actual asset path
           ),
         ),
         SizedBox(height: 10),
@@ -102,8 +102,7 @@ class NextButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        OnboardingScreens()
-            .screens[next]
+
       },
       child: Container(
         height: 100,
