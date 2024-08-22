@@ -1,4 +1,4 @@
-import 'package:contri_buter/screens/home_screen.dart';
+import 'package:contri_buter/screens/onboarding_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -16,4 +16,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
