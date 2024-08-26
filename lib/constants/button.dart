@@ -3,11 +3,11 @@ import 'package:contri_buter/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class LoginButton extends StatelessWidget {
+class constButton extends StatelessWidget {
   final TextEditingController emailController;
   final TextEditingController passwordController;
 
-  const LoginButton({
+  const constButton({
     super.key,
     required this.emailController,
     required this.passwordController,
@@ -37,12 +37,12 @@ class LoginButton extends StatelessWidget {
                 padding: const EdgeInsets.all(8.0),
                 child: loginProvider.isLoading
                     ? Text(
-                        'Log in',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w800,
-                          color: Colors.white,
-                        ),
-                      )
+                  'Log in',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white,
+                  ),
+                )
                     : CircularProgressIndicator(),
               ),
             ),

@@ -32,7 +32,7 @@ class PasswordTextField extends StatelessWidget {
                 keyboardType: TextInputType.visiblePassword,
                 cursorColor: AppColors.primaryColor,
                 focusNode: passwordFocusNode,
-                obscureText: !loginProvider.isVisible, // Use provider state
+                obscureText: !loginProvider.isVisible,
                 controller: passwordController,
                 decoration: InputDecoration(
                   suffixIcon: GestureDetector(
