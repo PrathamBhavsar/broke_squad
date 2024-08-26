@@ -1,5 +1,5 @@
-import 'package:contri_buter/screens/login_screen.dart';
-import 'package:contri_buter/screens/onboarding_screen.dart';
+import 'package:contri_buter/screens/auth/login_screen.dart';
+import 'package:contri_buter/screens/onboarding/onboarding_screen.dart';
 import 'package:flutter/material.dart';
 
 class Routes {
