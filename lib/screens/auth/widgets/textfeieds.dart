@@ -1,5 +1,5 @@
 import 'package:contri_buter/constants/UI.dart';
-import 'package:contri_buter/providers/login_provider.dart';
+import 'package:contri_buter/providers/auth_provider.dart';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -26,7 +26,7 @@ class PasswordTextField extends StatelessWidget {
       child: Center(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Consumer<LoginProvider>(
+          child: Consumer<AuthProvider>(
             builder: (context, loginProvider, child) {
               return TextField(
                 keyboardType: TextInputType.visiblePassword,
@@ -100,6 +100,7 @@ class EmailTextField extends StatelessWidget {
             keyboardType: TextInputType.emailAddress,
             cursorColor: AppColors.primaryColor,
             focusNode: emailFocusNode,
+            controller: emailController,
             decoration: InputDecoration(
                 focusColor: AppColors.primaryColor,
                 focusedBorder: OutlineInputBorder(

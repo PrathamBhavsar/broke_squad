@@ -5,14 +5,14 @@ import 'package:contri_buter/providers/auth_provider.dart';
 import 'package:contri_buter/screens/auth/widgets/login_button.dart';
 import 'package:contri_buter/screens/auth/widgets/textfeieds.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _HomeScreenState extends State<HomeScreen> {
   FocusNode emailFocusNode = FocusNode();
   FocusNode passwordFocusNode = FocusNode();
   TextEditingController emailController = TextEditingController();
@@ -43,30 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         color: Colors.red,
                       ),
                       SizedBox(height: 10),
-                      Expanded(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              children: [
-                                EmailTextField(
-                                  emailFocusNode: emailFocusNode,
-                                  emailController: emailController,
-                                ),
-                                SizedBox(height: 10),
-                                PasswordTextField(
-                                  passwordFocusNode: passwordFocusNode,
-                                  passwordController: passwordController,
-                                ),
-                              ],
-                            ),
-                            LoginButton(
-                              emailController: emailController,
-                              passwordController: passwordController,
-                            ),
-                          ],
-                        ),
-                      ),
+Text('HOMESCREEEN'),
                     ],
                   ),
                 ),
