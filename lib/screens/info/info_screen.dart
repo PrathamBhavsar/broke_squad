@@ -2,9 +2,9 @@ import 'package:contri_buter/providers/info_provider.dart';
 import 'package:contri_buter/screens/info/widgets/save_button.dart';
 import 'package:contri_buter/screens/info/widgets/text_feild.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:contri_buter/constants/UI.dart';
-
 
 class InfoScreen extends StatefulWidget {
   const InfoScreen({super.key});
@@ -27,7 +27,9 @@ class _InfoScreenState extends State<InfoScreen> {
         },
         child: Scaffold(
           appBar: AppBar(
-            title: Center(child: Text('Personal Information')),
+            title: Center(
+              child: Text('Personal Information'),
+            ),
           ),
           body: SingleChildScrollView(
             child: ConstrainedBox(
@@ -42,12 +44,44 @@ class _InfoScreenState extends State<InfoScreen> {
                     children: [
                       Column(
                         children: [
-                          Container(
-                            height: 120,
-                            width: 120,
-                            decoration: BoxDecoration(
-                                color: Colors.red,
-                                borderRadius: BorderRadius.circular(120)),
+                          Stack(
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  showModalBottomSheet(
+                                    context: context,
+                                    builder: (context) {
+                                      return _buildBottomSheet(context);
+                                    },
+                                  );
+                                },
+                                child: Container(
+                                  height: 120,
+                                  width: 120,
+                                  decoration: BoxDecoration(
+                                    color: Colors.red,
+                                    borderRadius: BorderRadius.circular(120),
+                                  ),
+                                ),
+                              ),
+                              Positioned(
+                                bottom: 0,
+                                right: 0,
+                                child: Container(
+                                  height: 30,
+                                  width: 30,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Icon(
+                                    Icons.edit,
+                                    size: 15,
+                                    color: AppColors.primaryColor,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                           SizedBox(height: 20),
                           NameTextField(
@@ -64,6 +98,35 @@ class _InfoScreenState extends State<InfoScreen> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildBottomSheet(BuildContext context) {
+    final infoProvider = Provider.of<InfoProvider>(context, listen: false);
+
+    return Container(
+      padding: EdgeInsets.all(16.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            leading: Icon(Icons.camera_alt),
+            title: Text('Take a Photo'),
+            onTap: () async {
+              await infoProvider.pickImageFromCamera();
+              Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.photo_library),
+            title: Text('Choose from Gallery'),
+            onTap: () async {
+              await infoProvider.pickImageFromGallery();
+              Navigator.pop(context);
+            },
+          ),
+        ],
       ),
     );
   }
