@@ -19,7 +19,7 @@ class SaveButton extends StatelessWidget {
           onTap: () {
             infoProvider.editUserEntry(
               nameController.text.trim(),
-              'yes'
+context
 
             );
           },
