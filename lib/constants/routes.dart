@@ -1,5 +1,5 @@
 import 'package:contri_buter/screens/auth/login_screen.dart';
-import 'package:contri_buter/screens/home_screen.dart';
+import 'package:contri_buter/screens/home_screen/home_screen.dart';
 import 'package:contri_buter/screens/info/info_screen.dart';
 import 'package:contri_buter/screens/onboarding/onboarding_screen.dart';
 import 'package:flutter/material.dart';
