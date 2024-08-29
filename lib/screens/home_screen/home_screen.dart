@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:contri_buter/constants/UI.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:shimmer/shimmer.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -47,23 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
             appBar: AppBar(
               automaticallyImplyLeading: false, // Removes the back button
 
-              title: Row(children: [
-                IconButton(
-                  icon: Icon(Icons.notifications_none_rounded),
-                  onPressed: () {},
-                ),
-            Shimmer.fromColors(
-              baseColor: Colors.grey[300]!,
-              highlightColor: Colors.grey[100]!,
-              child: ClipOval(
-                child: Container(
-                  height: 40,
-                  width: 40,
-                  color: Colors.white,
-                ),
-              ),
-            )
-              ],),
+              title: AppbarWidget(),
             ),
             body: Padding(
               padding: AppPaddings.scaffoldPadding,

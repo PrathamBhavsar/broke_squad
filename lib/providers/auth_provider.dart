@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'navigation_provider.dart';
 import 'package:contri_buter/constants/routes.dart';
@@ -39,6 +40,7 @@ class AuthProvider extends ChangeNotifier {
 
       // User exists and is logged in
       print('User logged in: ${signInResponse.user!.email}');
+      await _saveLoginState(signInResponse.user!.uid);
       Provider.of<NavigationProvider>(context, listen: false)
           .navigateToAndRemove(context, Routes.home);
       toggleLoading();
@@ -52,6 +54,8 @@ class AuthProvider extends ChangeNotifier {
 
         if (signUpResponse.user != null) {
           // User created successfully
+          await _saveLoginState(signUpResponse.user!.uid);
+
           await _createUserEntry(signUpResponse.user!, email);
 
           print('User signed up: ${signUpResponse.user!.email}');
@@ -87,5 +91,21 @@ class AuthProvider extends ChangeNotifier {
       // Handle error
       print('Insert user error: $error');
     }
+  }
+  Future<void> _saveLoginState(String userId) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isLoggedIn', true);
+    await prefs.setString('userId', userId);
+  }
+
+  Future<void> logout(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('isLoggedIn');
+    await prefs.remove('userId');
+    await FirebaseAuth.instance.signOut();
+
+    Provider.of<NavigationProvider>(context, listen: false)
+        .navigateToAndRemove(context, Routes.login);
+    notifyListeners();
   }
 }

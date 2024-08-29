@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "696603128386",
+    "project_id": "contri-butor",
+    "storage_bucket": "contri-butor.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:696603128386:android:12e72cd7378f3f84c1b3db",
+        "android_client_info": {
+          "package_name": "com.example.contri_buter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAiZ3cZ00K5GKc3YS4AHFwHZdWckZZQ5ZQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
