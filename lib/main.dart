@@ -2,6 +2,7 @@ import 'package:contri_buter/providers/auth_provider.dart';
 import 'package:contri_buter/providers/navigation_provider.dart';
 import 'package:contri_buter/providers/user_provider.dart'; // Import the HomeProvider
 import 'package:contri_buter/router/router.dart';
+import 'package:contri_buter/utils.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -42,21 +43,10 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    checkLoginState();
+
   }
 
-  Future<void> checkLoginState() async {
-    final prefs = await SharedPreferences.getInstance();
-    bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
 
-    await Future.delayed(
-        Duration(seconds: 2)); // Optional: Simulate loading time
-
-    setState(() {
-      initialRoute = isLoggedIn ? Routes.home : Routes.login;
-      isCheckingLoginState = false;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,17 +55,5 @@ class _MyAppState extends State<MyApp> {
         // onGenerateRoute: Routes.generateRoute,
         // home: isCheckingLoginState ? SplashScreen() : _buildHomeScreen(),
         routerConfig: MyRouter.router);
-  }
-
-  Widget _buildHomeScreen() {
-    return Builder(
-      builder: (context) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          Provider.of<NavigationProvider>(context, listen: false)
-              .navigateToAndRemove(context, initialRoute);
-        });
-        return Container();
-      },
-    );
   }
 }

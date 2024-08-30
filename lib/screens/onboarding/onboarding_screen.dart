@@ -1,4 +1,4 @@
-import 'package:contri_buter/constants/colors.dart';
+import 'package:contri_buter/constants/UI.dart';
 import 'package:contri_buter/constants/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_onboarding_slider/flutter_onboarding_slider.dart';
@@ -40,20 +40,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           context.goNamed('login');
         },
         finishButtonStyle: FinishButtonStyle(
-          backgroundColor: kPrimaryColor,
+          backgroundColor: AppColors.kPrimaryColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(100),
           ),
         ),
         skipTextButton: Text(
           'Skip',
-          style: poppins.copyWith(
+          style: AppTextStyles.poppins.copyWith(
             fontSize: 12.sp,
-            color: kPrimaryColor,
+            color: AppColors.kPrimaryColor,
             fontWeight: FontWeight.bold,
           ),
         ),
-        controllerColor: kPrimaryColor,
+        controllerColor: AppColors.kPrimaryColor,
         totalPage: 3,
         headerBackgroundColor: Colors.white,
         pageBackgroundColor: Colors.white,
@@ -85,7 +85,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   Text(
                     captions[i]['title']!,
                     textAlign: TextAlign.center,
-                    style: kOnboardingTitleTextStyle,
+                    style: AppTextStyles.kOnboardingTitleTextStyle,
                   ),
                   const SizedBox(
                     height: 20,
@@ -93,7 +93,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   Text(
                     captions[i]['subtitle']!,
                     textAlign: TextAlign.center,
-                    style: kOnboardingSubtitleTextStyle,
+                    style: AppTextStyles.kOnboardingSubtitleTextStyle,
                   ),
                 ],
               ),

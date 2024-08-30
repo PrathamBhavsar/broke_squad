@@ -1,4 +1,6 @@
+import 'package:contri_buter/router/router.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:contri_buter/providers/auth_provider.dart';
 
@@ -99,7 +101,7 @@ class _OtpScreenState extends State<OtpScreen> {
 
                   // Navigate to the appropriate screen based on the result
                   if (!authProvider.isLoading) {
-                    Navigator.of(context).pushReplacementNamed('/home');
+                    context.goNamed('home');
                   }
                 },
                 child: authProvider.isLoading

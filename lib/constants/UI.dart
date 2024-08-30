@@ -1,5 +1,7 @@
 import 'dart:ui';
-
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/cupertino.dart';
 
 class AppColors {
@@ -8,10 +10,28 @@ class AppColors {
   static Color accentColor = Color(0xFFAEBDC2);
   static Color lightGrey = Color(0xFFF5F5F5);
   static Color white = Color(0xFFFFFFFF);
+  static Color kPrimaryColor = Color(0xFFE14150);
+  static Color kDarkColor = Color(0xFF000000);
 }
 
 class AppPaddings {
   static EdgeInsetsGeometry scaffoldPadding =  EdgeInsets.fromLTRB(12, 12, 12, 12);
 
   // static EdgeInsetsGeometry scaffoldPadding = EdgeInsets.fromLTRB(left, top, right, bottom)
+}
+
+class AppTextStyles{
+  static TextStyle poppins = GoogleFonts.poppins();
+  static TextStyle kOnboardingTitleTextStyle = GoogleFonts.poppins(
+    color: AppColors.kPrimaryColor,
+    fontSize: 22.0.sp,
+    fontWeight: FontWeight.w600,
+  );
+
+  static TextStyle kOnboardingSubtitleTextStyle = GoogleFonts.poppins(
+    color: Colors.black38,
+    fontSize: 16.0.sp,
+    fontWeight: FontWeight.w600,
+  );
+
 }
