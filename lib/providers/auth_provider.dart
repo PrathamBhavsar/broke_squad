@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:contri_buter/screens/auth/otp_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:intl/intl.dart';
 
 import 'navigation_provider.dart';
 import 'package:contri_buter/constants/routes.dart';
@@ -11,7 +12,8 @@ import 'package:contri_buter/models/user.dart';
 
 class AuthProvider extends ChangeNotifier {
   bool _isVisible = false;
-  bool _isLoading = true;
+  bool _isLoading = false;
+  String? _verificationId; // To store the verification ID after sending OTP
 
   bool get isVisible => _isVisible;
   bool get isLoading => _isLoading;
@@ -26,78 +28,132 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> signUpOrSignInUser(
-      String email, String password, BuildContext context) async {
+  Future<void> requestOtp(
+      String areaCode, int phoneNumber, BuildContext context) async {
+    toggleLoading();
+    final auth = FirebaseAuth.instance;
+    final fullPhoneNumber = '$areaCode$phoneNumber';
+
+    try {
+      await auth.verifyPhoneNumber(
+        phoneNumber: fullPhoneNumber,
+        verificationCompleted: (PhoneAuthCredential credential) async {
+          // This callback is called when the verification is completed automatically
+          await _signInWithPhoneAuthCredential(
+              credential, context, areaCode, phoneNumber);
+        },
+        verificationFailed: (FirebaseAuthException e) {
+          // Handle error
+          print('Verification failed: ${e.message}');
+          toggleLoading();
+        },
+        codeSent: (String verificationId, int? resendToken) {
+          // Store the verification ID to be used later for OTP verification
+          _verificationId = verificationId;
+          print('OTP sent to $fullPhoneNumber');
+
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => OtpScreen(phoneNumber: phoneNumber),
+          ));
+
+          toggleLoading();
+        },
+        codeAutoRetrievalTimeout: (String verificationId) {
+          // Auto-resolution timed out
+          _verificationId = verificationId;
+        },
+      );
+    } catch (error) {
+      print('Failed to request OTP: $error');
+      toggleLoading();
+    }
+  }
+
+  // Function to verify OTP entered by the user
+  Future<void> verifyOtp(String otp, BuildContext context, String areaCode,
+      int phoneNumber) async {
     toggleLoading();
     final auth = FirebaseAuth.instance;
 
     try {
-      // Try to sign in the user
-      UserCredential signInResponse = await auth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-
-      // User exists and is logged in
-      print('User logged in: ${signInResponse.user!.email}');
-      await _saveLoginState(signInResponse.user!.uid);
-      Provider.of<NavigationProvider>(context, listen: false)
-          .navigateToAndRemove(context, Routes.home);
-      toggleLoading();
-    } catch (error) {
-      // If sign in fails, assume user does not exist and sign up
-      try {
-        UserCredential signUpResponse = await auth.createUserWithEmailAndPassword(
-          email: email,
-          password: password,
+      if (_verificationId != null) {
+        // Create a PhoneAuthCredential with the OTP and verification ID
+        final phoneAuthCredential = PhoneAuthProvider.credential(
+          verificationId: _verificationId!,
+          smsCode: otp,
         );
 
-        if (signUpResponse.user != null) {
-          // User created successfully
-          await _saveLoginState(signUpResponse.user!.uid);
-
-          await _createUserEntry(signUpResponse.user!, email);
-
-          print('User signed up: ${signUpResponse.user!.email}');
-          Provider.of<NavigationProvider>(context, listen: false)
-              .navigateToAndRemove(context, Routes.info);
-          toggleLoading();
-        }
-      } catch (signUpError) {
-        // Handle sign-up error
-        print('Sign-up failed: $signUpError');
+        // Sign in or sign up the user with the provided credentials
+        await _signInWithPhoneAuthCredential(
+            phoneAuthCredential, context, areaCode, phoneNumber);
+      } else {
+        print('Verification ID is null. Cannot verify OTP.');
         toggleLoading();
       }
+    } catch (error) {
+      print('Failed to verify OTP: $error');
+      toggleLoading();
     }
   }
 
-  Future<void> _createUserEntry(User user, String email) async {
-    final firestore = FirebaseFirestore.instance;
+  // Helper function to sign in with PhoneAuthCredential and create user entry if new
+  Future<void> _signInWithPhoneAuthCredential(PhoneAuthCredential credential,
+      BuildContext context, String areaCode, int phoneNumber) async {
+    final auth = FirebaseAuth.instance;
 
-    // Create a new user object using the User model
+    try {
+      // Sign in the user with the given credential
+      final userCredential = await auth.signInWithCredential(credential);
+
+      // Check if the user is new or existing
+      if (userCredential.additionalUserInfo!.isNewUser) {
+        // User signed up
+        await _createUserEntry(userCredential.user!, areaCode, phoneNumber);
+        Provider.of<NavigationProvider>(context, listen: false)
+            .navigateToAndRemove(context, Routes.info);
+      } else {
+        // User logged in
+        print('User logged in: ${userCredential.user!.phoneNumber}');
+        Provider.of<NavigationProvider>(context, listen: false)
+            .navigateToAndRemove(context, Routes.home);
+      }
+
+      await _saveLoginState(userCredential.user!.uid);
+      toggleLoading();
+    } catch (error) {
+      print('Failed to sign in with PhoneAuthCredential: $error');
+      toggleLoading();
+    }
+  }
+
+  // Function to create a new user entry in Firestore
+  Future<void> _createUserEntry(
+      User user, String areaCode, int phoneNumber) async {
+    final firestore = FirebaseFirestore.instance;
     final newUser = UserModel(
       id: user.uid,
-      email: email,
+      phoneNumber: '$areaCode$phoneNumber',
       userName: '',
       profileImage: '',
       createdAt: DateFormat('EEEE, MMM d, y').format(DateTime.now()),
     );
 
-    // Insert the user into the Firestore users collection
     try {
       await firestore.collection('users').doc(user.uid).set(newUser.toJson());
       print('User created with ID: ${user.uid}');
     } catch (error) {
-      // Handle error
-      print('Insert user error: $error');
+      print('Failed to create user entry: $error');
     }
   }
+
+  // Function to save the login state in SharedPreferences
   Future<void> _saveLoginState(String userId) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('isLoggedIn', true);
     await prefs.setString('userId', userId);
   }
 
+  // Function to handle logout
   Future<void> logout(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('isLoggedIn');

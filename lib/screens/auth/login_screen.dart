@@ -13,10 +13,19 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  FocusNode emailFocusNode = FocusNode();
-  FocusNode passwordFocusNode = FocusNode();
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
+  final FocusNode phoneFocusNode = FocusNode();
+  final TextEditingController phoneController = TextEditingController();
+  final TextEditingController areaCodeController =
+      TextEditingController(text: "+91"); // Default area code
+
+  @override
+  void dispose() {
+    // Clean up the controllers and focus nodes when the widget is disposed
+    phoneFocusNode.dispose();
+    phoneController.dispose();
+    areaCodeController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +33,8 @@ class _LoginScreenState extends State<LoginScreen> {
       create: (_) => AuthProvider(),
       child: GestureDetector(
         onTap: () {
-          FocusScope.of(context).unfocus();
+          FocusScope.of(context)
+              .unfocus(); // Dismiss the keyboard when tapping outside
         },
         child: Scaffold(
           body: SingleChildScrollView(
@@ -41,6 +51,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       Container(
                         height: 300,
                         color: Colors.red,
+                        // Add your custom design for the top section here
                       ),
                       SizedBox(height: 10),
                       Expanded(
@@ -49,20 +60,38 @@ class _LoginScreenState extends State<LoginScreen> {
                           children: [
                             Column(
                               children: [
-                                EmailTextField(
-                                  emailFocusNode: emailFocusNode,
-                                  emailController: emailController,
-                                ),
-                                SizedBox(height: 10),
-                                PasswordTextField(
-                                  passwordFocusNode: passwordFocusNode,
-                                  passwordController: passwordController,
+                                // Phone number input with area code
+                                Row(
+                                  children: [
+                                    // Area code text field
+                                    Expanded(
+                                      flex: 1,
+                                      child: TextField(
+                                        controller: areaCodeController,
+                                        keyboardType: TextInputType.phone,
+                                        decoration: InputDecoration(
+                                          labelText: "Area Code",
+                                          border: OutlineInputBorder(),
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(width: 10),
+                                    // Phone number text field
+                                    Expanded(
+                                      flex: 3,
+                                      child: PhoneTextField(
+                                        phoneFocusNode: phoneFocusNode,
+                                        phoneController: phoneController,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
+                            // Login button
                             LoginButton(
-                              emailController: emailController,
-                              passwordController: passwordController,
+                              phoneController: phoneController,
+                              areaCodeController: areaCodeController,
                             ),
                           ],
                         ),

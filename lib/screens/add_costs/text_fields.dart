@@ -1,5 +1,4 @@
 import 'package:contri_buter/constants/UI.dart';
-import 'package:contri_buter/providers/add_costs_provider.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';
@@ -28,7 +27,7 @@ class DescriptionTextField extends StatelessWidget {
       child: Center(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Consumer<AddCostsProvider>(
+          child: Consumer(
             builder: (context, loginProvider, child) {
               return TextField(
                 cursorColor: AppColors.primaryColor,
@@ -120,7 +119,6 @@ class AmountTextField extends StatelessWidget {
     );
   }
 }
-
 
 class DateTextField extends StatefulWidget {
   DateTextField({
@@ -219,7 +217,8 @@ class _DateTextFieldState extends State<DateTextField> {
             );
 
             // Format and update the controller text
-            final formattedDateTime = DateFormat('yyyy-MM-dd, HH:mm').format(combinedDateTime);
+            final formattedDateTime =
+                DateFormat('yyyy-MM-dd, HH:mm').format(combinedDateTime);
             widget.dateController.text = formattedDateTime;
           }
         });

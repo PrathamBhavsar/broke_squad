@@ -3,14 +3,14 @@ class UserModel {
   final String createdAt;
   final String userName;
   final String profileImage;
-  final String email;
+  final String phoneNumber;
 
   UserModel({
     required this.id,
     required this.createdAt,
     required this.userName,
     required this.profileImage,
-    required this.email,
+    required this.phoneNumber,
   });
 
   // json to User object
@@ -20,7 +20,7 @@ class UserModel {
       createdAt: json['created_at'],
       userName: json['user_name'],
       profileImage: json['profile_image'],
-      email: json['email'],
+      phoneNumber: json['phone_number'],
     );
   }
 
@@ -31,7 +31,7 @@ class UserModel {
       'created_at': createdAt,
       'user_name': userName,
       'profile_image': profileImage,
-      'email': email,
+      'phone_number': phoneNumber,
     };
   }
 }

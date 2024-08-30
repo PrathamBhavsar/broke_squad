@@ -1,4 +1,3 @@
-import 'package:contri_buter/providers/add_costs_provider.dart';
 import 'package:contri_buter/providers/navigation_provider.dart';
 import 'package:contri_buter/screens/add_costs/next_button.dart';
 import 'package:contri_buter/screens/add_costs/text_fields.dart';
@@ -24,49 +23,46 @@ class _AddCostsScreenState extends State<AddCostsScreen> {
   TextEditingController dateController = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => AddCostsProvider(),
-      child: GestureDetector(
-        onTap: () {
-          FocusScope.of(context).unfocus();
-        },
-        child: Scaffold(
-          appBar: AppBar(
-            leading: IconButton(
-                onPressed: () {
-                  Provider.of<NavigationProvider>(context, listen: false)
-                      .pop(context);
-                },
-                icon: Icon(Icons.close_rounded)),
-          ),
-          body: Padding(
-            padding: AppPaddings.scaffoldPadding,
-            child: Column(
-              children: [
-                SizedBox(height: 10),
-                DescriptionTextField(
-                  descFocusNode: descFocusNode,
-                  descController: descController,
-                ),
-                SizedBox(height: 10),
-                AmountTextField(
-                  amountController: amountController,
-                  amountFocusNode: amountFocusNode,
-                ),
-                SizedBox(height: 10),
-                DateTextField(
-                  dateFocusNode: dateFocusNode,
-                  dateController: dateController,
-                ),
-                Expanded(
-                  child: Container(
-                      // This container will take up the remaining space
-                      ),
-                ),
-                SizedBox(height: 10),
-                NextButton(),
-              ],
-            ),
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+              onPressed: () {
+                Provider.of<NavigationProvider>(context, listen: false)
+                    .pop(context);
+              },
+              icon: Icon(Icons.close_rounded)),
+        ),
+        body: Padding(
+          padding: AppPaddings.scaffoldPadding,
+          child: Column(
+            children: [
+              SizedBox(height: 10),
+              DescriptionTextField(
+                descFocusNode: descFocusNode,
+                descController: descController,
+              ),
+              SizedBox(height: 10),
+              AmountTextField(
+                amountController: amountController,
+                amountFocusNode: amountFocusNode,
+              ),
+              SizedBox(height: 10),
+              DateTextField(
+                dateFocusNode: dateFocusNode,
+                dateController: dateController,
+              ),
+              Expanded(
+                child: Container(
+                    // This container will take up the remaining space
+                    ),
+              ),
+              SizedBox(height: 10),
+              NextButton(),
+            ],
           ),
         ),
       ),
