@@ -1,10 +1,8 @@
-import 'package:contri_buter/constants/UI.dart';
-import 'package:contri_buter/constants/routes.dart';
-import 'package:contri_buter/providers/navigation_provider.dart';
-import 'package:contri_buter/screens/onboarding/widgets/dot_indicator_widget.dart';
-import 'package:contri_buter/screens/onboarding/widgets/pages_widget.dart';
+import 'package:contri_buter/constants/colors.dart';
+import 'package:contri_buter/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_onboarding_slider/flutter_onboarding_slider.dart';
+import 'package:go_router/go_router.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -14,114 +12,100 @@ class OnboardingScreen extends StatefulWidget {
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
-  final PageController _pageController = PageController();
-
+  List<Map<String, String>> captions = [
+    {
+      "title": "Fair Share, No Fuss",
+      "subtitle":
+          "Easily split the bill with friends and make every outing stress-free."
+    },
+    {
+      "title": "Split Smart, Stay Social",
+      "subtitle":
+          "No more awkward math - just simple, quick bill splitting with your crew."
+    },
+    {
+      "title": "Friends, Fun, and Fairness",
+      "subtitle": "Enjoy your time together, we'll handle the bill."
+    }
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: AppPaddings.scaffoldPadding,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              height: 416,
-              child: PageView.builder(
-                controller: _pageController,
-                itemCount:
-                OnboardingScreens().screens.length, // Set the item count
-                itemBuilder: (context, index) {
-                  return OnboardingScreens()
-                      .screens[index]; // Access the list of widgets
-                },
-              ),
-            ),
-            SizedBox(height: 10),
-            DotsIndicator(
-              controller: _pageController,
-              itemCount: OnboardingScreens().screens.length,
-            ),
-            Spacer(flex: 1),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SkipButton(pageController: _pageController),
-                NextButton(pageController: _pageController),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class SkipButton extends StatelessWidget {
-  final PageController pageController;
-
-  const SkipButton({super.key, required this.pageController});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        pageController.animateToPage(
-          pageController.positions.first.maxScrollExtent.toInt(),
-          duration: Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-        );
-      },
-      child: Container(
-        height: 60,
-        width: 100,
-        child: Center(
-          child: Text(
-            'Skip',
-            style: TextStyle(
-              fontWeight: FontWeight.w400,
-              color: AppColors.accentColor,
-              fontSize: 18,
-            ),
+      body: SafeArea(
+          child: OnBoardingSlider(
+        finishButtonText: 'Login',
+        onFinish: () {
+          context.goNamed('login');
+        },
+        finishButtonStyle: FinishButtonStyle(
+          backgroundColor: kPrimaryColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(100),
           ),
         ),
-      ),
-    );
-  }
-}
-
-class NextButton extends StatelessWidget {
-  final PageController pageController;
-
-  const NextButton({super.key, required this.pageController});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        int currentPage = pageController.page?.toInt() ?? 0;
-        if (currentPage < OnboardingScreens().screens.length - 1) {
-          pageController.nextPage(
-            duration: Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
-          );
-        } else {
-          Provider.of<NavigationProvider>(context, listen: false)
-              .navigateTo(context, Routes.login);
-        }
-      },
-      child: Container(
-        height: 60,
-        width: 100,
-        decoration: BoxDecoration(
-          color: AppColors.primaryColor,
-          borderRadius: BorderRadiusDirectional.circular(10),
+        skipTextButton: Text(
+          'Skip',
+          style: TextStyle(
+            fontSize: 16,
+            color: kPrimaryColor,
+            fontWeight: FontWeight.w600,
+          ),
         ),
-        child: Icon(
-          Icons.arrow_forward_sharp,
-          color: Colors.white,
-        ),
-      ),
+        controllerColor: kPrimaryColor,
+        totalPage: 3,
+        headerBackgroundColor: Colors.white,
+        pageBackgroundColor: Colors.white,
+        centerBackground: true,
+        background: [
+          for (int i = 1; i < 4; i++)
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 10.0),
+              child: Image.asset(
+                'assets/slide_$i.png',
+                height: 400,
+              ),
+            )
+        ],
+        speed: 1.8,
+        pageBodies: [
+          for (int i = 0; i < 3; i++)
+            Container(
+              alignment: Alignment.center,
+              width: MediaQuery.of(context).size.width,
+              padding: const EdgeInsets.symmetric(horizontal: 40),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  const SizedBox(
+                    height: 480,
+                  ),
+                  Text(
+                    captions[i]['title']!,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: kPrimaryColor,
+                      fontSize: 24.0,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                    captions[i]['subtitle']!,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.black26,
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+        ],
+      )),
     );
   }
 }

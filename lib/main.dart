@@ -1,5 +1,6 @@
 import 'package:contri_buter/providers/navigation_provider.dart';
 import 'package:contri_buter/providers/user_provider.dart'; // Import the HomeProvider
+import 'package:contri_buter/router/router.dart';
 import 'package:contri_buter/screens/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -24,8 +25,6 @@ Future<void> main() async {
   );
 }
 
-
-
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
@@ -47,7 +46,8 @@ class _MyAppState extends State<MyApp> {
     final prefs = await SharedPreferences.getInstance();
     bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
 
-    await Future.delayed(Duration(seconds: 2)); // Optional: Simulate loading time
+    await Future.delayed(
+        Duration(seconds: 2)); // Optional: Simulate loading time
 
     setState(() {
       initialRoute = isLoggedIn ? Routes.home : Routes.login;
@@ -57,11 +57,11 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      navigatorKey: GlobalKey<NavigatorState>(), // Ensure Navigator context
-      onGenerateRoute: Routes.generateRoute,
-      home: isCheckingLoginState ? SplashScreen() : _buildHomeScreen(),
-    );
+    return MaterialApp.router(
+        // navigatorKey: GlobalKey<NavigatorState>(), // Ensure Navigator context
+        // onGenerateRoute: Routes.generateRoute,
+        // home: isCheckingLoginState ? SplashScreen() : _buildHomeScreen(),
+        routerConfig: MyRouter.router);
   }
 
   Widget _buildHomeScreen() {
