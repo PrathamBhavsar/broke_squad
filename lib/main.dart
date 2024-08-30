@@ -1,13 +1,12 @@
 import 'package:contri_buter/providers/navigation_provider.dart';
 import 'package:contri_buter/providers/user_provider.dart'; // Import the HomeProvider
 import 'package:contri_buter/router/router.dart';
-import 'package:contri_buter/screens/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'constants/navigator_key.dart';
 import 'constants/routes.dart';
 
 Future<void> main() async {
@@ -20,7 +19,9 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (context) => NavigationProvider()),
         ChangeNotifierProvider(create: (context) => UserProvider()),
       ],
-      child: MyApp(),
+      child: ScreenUtilInit(
+        builder: (context, child) => MyApp(),
+      ),
     ),
   );
 }

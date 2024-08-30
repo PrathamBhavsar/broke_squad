@@ -1,5 +1,3 @@
-import 'package:contri_buter/constants/routes.dart';
-import 'package:contri_buter/main.dart';
 import 'package:contri_buter/screens/add_costs/add_costs_screen.dart';
 import 'package:contri_buter/screens/auth/login_screen.dart';
 import 'package:contri_buter/screens/home_screen/home_screen.dart';

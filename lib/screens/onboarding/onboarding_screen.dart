@@ -1,7 +1,8 @@
 import 'package:contri_buter/constants/colors.dart';
-import 'package:contri_buter/screens/splash_screen.dart';
+import 'package:contri_buter/constants/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_onboarding_slider/flutter_onboarding_slider.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -33,6 +34,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     return Scaffold(
       body: SafeArea(
           child: OnBoardingSlider(
+        skipFunctionOverride: () => context.goNamed('login'),
         finishButtonText: 'Login',
         onFinish: () {
           context.goNamed('login');
@@ -45,10 +47,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         ),
         skipTextButton: Text(
           'Skip',
-          style: TextStyle(
-            fontSize: 16,
+          style: poppins.copyWith(
+            fontSize: 12.sp,
             color: kPrimaryColor,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.bold,
           ),
         ),
         controllerColor: kPrimaryColor,
@@ -66,7 +68,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
             )
         ],
-        speed: 1.8,
+        speed: 0.9,
         pageBodies: [
           for (int i = 0; i < 3; i++)
             Container(
@@ -83,11 +85,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   Text(
                     captions[i]['title']!,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: kPrimaryColor,
-                      fontSize: 24.0,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: kOnboardingTitleTextStyle,
                   ),
                   const SizedBox(
                     height: 20,
@@ -95,11 +93,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   Text(
                     captions[i]['subtitle']!,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.black26,
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: kOnboardingSubtitleTextStyle,
                   ),
                 ],
               ),
