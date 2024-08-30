@@ -1,3 +1,4 @@
+import 'package:contri_buter/providers/auth_provider.dart';
 import 'package:contri_buter/providers/navigation_provider.dart';
 import 'package:contri_buter/providers/user_provider.dart'; // Import the HomeProvider
 import 'package:contri_buter/router/router.dart';
@@ -18,6 +19,7 @@ Future<void> main() async {
       providers: [
         ChangeNotifierProvider(create: (context) => NavigationProvider()),
         ChangeNotifierProvider(create: (context) => UserProvider()),
+        ChangeNotifierProvider(create: (context) => AuthProvider()),
       ],
       child: ScreenUtilInit(
         builder: (context, child) => MyApp(),
