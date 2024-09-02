@@ -1,8 +1,6 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter/cupertino.dart';
 
 class AppColors {
   static Color primaryColor = Color(0xFF1F2128);
@@ -34,4 +32,9 @@ class AppTextStyles{
     fontWeight: FontWeight.w600,
   );
 
+  static TextStyle kPhoneInputTextFieldTextStyle = GoogleFonts.poppins(
+    color: AppColors.kDarkColor,
+    fontWeight: FontWeight.w600,
+    fontSize: 18.sp,
+  );
 }
