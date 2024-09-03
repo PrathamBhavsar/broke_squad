@@ -23,11 +23,11 @@ abstract class MyRouter {
       name: 'login',
       builder: (context, state) => LoginScreen(),
     ),
-    GoRoute(
-      path: '/otp_screen',
-      name: 'otp_screen',
-      builder: (context, state) => OptInputScreen(),
-    ),
+    // GoRoute(
+    //   path: '/otp_screen',
+    //   name: 'otp_screen',
+    //   builder: (context, state) => OptInputScreen(),
+    // ),
     GoRoute(
       path: '/home',
       name: 'home',
@@ -38,6 +38,5 @@ abstract class MyRouter {
       name: 'add_costs',
       builder: (context, state) => AddCostsScreen(),
     ),
-
   ]);
 }

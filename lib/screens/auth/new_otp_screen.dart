@@ -1,12 +1,16 @@
 import 'package:contri_buter/constants/UI.dart';
+import 'package:contri_buter/providers/auth_provider.dart';
 import 'package:contri_buter/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pinput/pinput.dart';
+import 'package:provider/provider.dart';
 
 class OptInputScreen extends StatefulWidget {
-  const OptInputScreen({super.key});
+  final int phoneNumber;
+
+  const OptInputScreen({super.key, required this.phoneNumber});
 
   @override
   State<OptInputScreen> createState() => _OptInputScreenState();
@@ -16,6 +20,8 @@ class _OptInputScreenState extends State<OptInputScreen> {
   String otp = '';
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(),
@@ -32,7 +38,8 @@ class _OptInputScreenState extends State<OptInputScreen> {
                 children: [
                   Text(
                     "Verify your\nPhone Number",
-                    style: AppTextStyles.kOnboardingTitleTextStyle.copyWith(color: AppColors.kDarkColor),
+                    style: AppTextStyles.kOnboardingTitleTextStyle
+                        .copyWith(color: AppColors.kDarkColor),
                     textAlign: TextAlign.center,
                   ),
                   Text("Enter your OTP code here.",
@@ -42,7 +49,7 @@ class _OptInputScreenState extends State<OptInputScreen> {
                     height: 40,
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric( horizontal: 12.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 12.0),
                     child: Pinput(
                       length: 6,
                       defaultPinTheme: PinTheme(
@@ -52,16 +59,18 @@ class _OptInputScreenState extends State<OptInputScreen> {
                             color: AppColors.kAuthTextFieldColor,
                             shape: BoxShape.circle,
                           ),
-                          textStyle: AppTextStyles.kPhoneInputTextFieldTextStyle),
+                          textStyle:
+                              AppTextStyles.kPhoneInputTextFieldTextStyle),
                       submittedPinTheme: PinTheme(
-                          width: 60.w,
-                          height: 60.h,
-                          decoration: BoxDecoration(
-                            color: AppColors.kPrimaryColor,
-                            shape: BoxShape.circle,
-                          ),
-                          textStyle: AppTextStyles.kPhoneInputTextFieldTextStyle
-                              .copyWith(color: Colors.white),),
+                        width: 60.w,
+                        height: 60.h,
+                        decoration: BoxDecoration(
+                          color: AppColors.kPrimaryColor,
+                          shape: BoxShape.circle,
+                        ),
+                        textStyle: AppTextStyles.kPhoneInputTextFieldTextStyle
+                            .copyWith(color: Colors.white),
+                      ),
                       onChanged: (value) {
                         otp = value;
                         if (value.length == 6) {
@@ -71,7 +80,13 @@ class _OptInputScreenState extends State<OptInputScreen> {
                       },
                       onSubmitted: (value) {
                         //TODO: Run method to verify otp here too
-                        logEvent(str:'VALUE : $value');
+                        // Verify OTP
+                        authProvider.verifyOtp(
+                          otp,
+                          context,
+                          widget.phoneNumber,
+                        );
+                        logEvent(str: 'VALUE : $value');
                       },
                     ),
                   ),

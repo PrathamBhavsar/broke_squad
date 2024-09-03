@@ -6,6 +6,7 @@ import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:provider/provider.dart';
 import 'package:contri_buter/constants/UI.dart';
 import 'package:contri_buter/providers/auth_provider.dart';
+import 'package:contri_buter/screens/auth/otp_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -24,9 +25,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void initState() {
-    scrollController.addListener(() => phoneFocusNode.unfocus(),);
+    scrollController.addListener(
+      () => phoneFocusNode.unfocus(),
+    );
     super.initState();
   }
+
   @override
   void dispose() {
     // Clean up the controllers and focus nodes when the widget is disposed
@@ -38,7 +42,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _manageLogin() async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    Navigator.push(context, MaterialPageRoute(builder: (context) => OptInputScreen(),));
     String? phNo = phoneNumber.phoneNumber;
     String? code = phoneNumber.dialCode;
     if (phNo == null || code == null || phNo.length < 12 || code.isEmpty) {
@@ -55,7 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
       // If the OTP is sent, show a dialog to enter the OTP
       if (!authProvider.isLoading) {
         Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => OtpScreen(
+          builder: (context) => OptInputScreen(
             phoneNumber: int.parse('$code$phNo'),
           ),
         ));
@@ -131,7 +134,7 @@ class _LoginScreenState extends State<LoginScreen> {
           borderRadius: BorderRadius.circular(12.r),
           borderSide: BorderSide.none,
         ),
-        fillColor:AppColors.kAuthTextFieldColor,
+        fillColor: AppColors.kAuthTextFieldColor,
         filled: true,
       ),
       formatInput: true,
@@ -147,6 +150,7 @@ class _LoginScreenState extends State<LoginScreen> {
       onInputChanged: (value) => phoneNumber = value,
     );
   }
+
   _buildSubmitButton() {
     return ElevatedButton(
       onPressed: _manageLogin,
@@ -161,8 +165,7 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
       style: ButtonStyle(
         padding: WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 15)),
-        backgroundColor:
-        WidgetStatePropertyAll(AppColors.kPrimaryColor),
+        backgroundColor: WidgetStatePropertyAll(AppColors.kPrimaryColor),
         shape: WidgetStatePropertyAll(
           RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12.r),
