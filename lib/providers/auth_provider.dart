@@ -106,7 +106,6 @@ class AuthProvider extends ChangeNotifier {
 
       if (userCredential.additionalUserInfo!.isNewUser) {
         await _createUserEntry(userCredential.user!, phoneNumber);
-
         context.goNamed('info');
       } else {
         print('User logged in: ${userCredential.user!.phoneNumber}');
