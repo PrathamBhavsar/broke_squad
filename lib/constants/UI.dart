@@ -14,14 +14,16 @@ class AppColors {
 }
 
 class AppPaddings {
-  static EdgeInsetsGeometry scaffoldPadding =  EdgeInsets.fromLTRB(12, 12, 12, 12);
+  static EdgeInsetsGeometry scaffoldPadding =
+      EdgeInsets.fromLTRB(12, 12, 12, 12);
 
-  static EdgeInsetsGeometry getBottomPadding(context) => EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom);
+  static EdgeInsetsGeometry getBottomPadding(context) =>
+      EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom);
 
   // static EdgeInsetsGeometry scaffoldPadding = EdgeInsets.fromLTRB(left, top, right, bottom)
 }
 
-class AppTextStyles{
+class AppTextStyles {
   static TextStyle poppins = GoogleFonts.poppins();
   static TextStyle kOnboardingTitleTextStyle = GoogleFonts.poppins(
     color: AppColors.kPrimaryColor,
@@ -33,6 +35,17 @@ class AppTextStyles{
     color: Colors.black38,
     fontSize: 16.0.sp,
     fontWeight: FontWeight.w600,
+  );
+
+  static TextStyle kTransactionTitleTextStyle = GoogleFonts.poppins(
+    color: AppColors.kDarkColor,
+    fontSize: 16.0.sp,
+    fontWeight: FontWeight.w600,
+  );
+  static TextStyle kTransactionSubtitleTextStyle = GoogleFonts.poppins(
+    color: AppColors.kDarkColor,
+    fontSize: 14.0.sp,
+    fontWeight: FontWeight.w500,
   );
 
   static TextStyle kPhoneInputTextFieldTextStyle = GoogleFonts.poppins(

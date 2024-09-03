@@ -1,7 +1,7 @@
 import 'package:contri_buter/screens/add_costs/add_costs_screen.dart';
 import 'package:contri_buter/screens/auth/login_screen.dart';
+import 'package:contri_buter/screens/auth/new_otp_screen.dart';
 import 'package:contri_buter/screens/home_screen/home_screen.dart';
-import 'package:contri_buter/screens/info/info_screen.dart';
 import 'package:contri_buter/screens/onboarding/onboarding_screen.dart';
 import 'package:contri_buter/screens/splash_screen.dart';
 import 'package:go_router/go_router.dart';
@@ -42,6 +42,21 @@ abstract class MyRouter {
       path: '/info',
       name: 'info',
       builder: (context, state) => InfoScreen(),
+    ),
+    GoRoute(
+      path: '/menu',
+      name: 'menu',
+      builder: (context, state) => MenuScreen(),
+    ),
+    GoRoute(
+      path: '/profile',
+      name: 'profile',
+      builder: (context, state) => ProfileScreen(),
+    ),
+    GoRoute(
+      path: '/createBill',
+      name: 'createBill',
+      builder: (context, state) => CreateBillScreen(),
     ),
   ]);
 }
