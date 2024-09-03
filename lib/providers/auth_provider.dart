@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:contri_buter/screens/auth/new_otp_screen.dart';
 import 'package:contri_buter/screens/auth/otp_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -47,7 +48,7 @@ class AuthProvider extends ChangeNotifier {
           print('OTP sent to $fullPhoneNumber');
 
           Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => OtpScreen(phoneNumber: phoneNumber),
+            builder: (context) => OptInputScreen(phoneNumber: phoneNumber),
           ));
 
           toggleLoading();

@@ -6,7 +6,6 @@ import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:provider/provider.dart';
 import 'package:contri_buter/constants/UI.dart';
 import 'package:contri_buter/providers/auth_provider.dart';
-import 'package:contri_buter/screens/auth/otp_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

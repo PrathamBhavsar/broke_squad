@@ -75,6 +75,11 @@ class _OptInputScreenState extends State<OptInputScreen> {
                         otp = value;
                         if (value.length == 6) {
                           //TODO: Run method to verify otp here
+                          authProvider.verifyOtp(
+                            otp,
+                            context,
+                            widget.phoneNumber,
+                          );
                           Fluttertoast.showToast(msg: 'value: $value');
                         }
                       },
