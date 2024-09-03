@@ -1,7 +1,11 @@
 import 'package:contri_buter/screens/add_costs/add_costs_screen.dart';
 import 'package:contri_buter/screens/auth/login_screen.dart';
 import 'package:contri_buter/screens/auth/new_otp_screen.dart';
+import 'package:contri_buter/screens/home_screen/create_bill_screen.dart';
 import 'package:contri_buter/screens/home_screen/home_screen.dart';
+import 'package:contri_buter/screens/home_screen/menu_screen.dart';
+import 'package:contri_buter/screens/home_screen/profile_screen.dart';
+import 'package:contri_buter/screens/info/info_screen.dart';
 import 'package:contri_buter/screens/onboarding/onboarding_screen.dart';
 import 'package:contri_buter/screens/splash_screen.dart';
 import 'package:go_router/go_router.dart';
