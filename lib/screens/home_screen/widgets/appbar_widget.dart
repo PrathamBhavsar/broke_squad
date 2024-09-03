@@ -1,5 +1,7 @@
+import 'package:contri_buter/providers/auth_provider.dart';
 import 'package:contri_buter/providers/user_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -20,8 +22,10 @@ class _AppbarWidgetState extends State<AppbarWidget> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             IconButton(
-              icon: Icon(Icons.notifications_none_rounded),
-              onPressed: () {},
+              icon: Icon(Icons.menu_rounded),
+              onPressed: () {
+                context.goNamed('menu');
+              },
             ),
             Consumer<UserProvider>(
               builder: (context, homeProvider, child) {
@@ -44,16 +48,21 @@ class _AppbarWidgetState extends State<AppbarWidget> {
                       return Icon(Icons.error);
                     } else if (snapshot.hasData) {
                       final profileImageUrl = snapshot.data;
-                      return profileImageUrl != null
-                          ? ClipOval(
-                        child: Image.network(
-                          profileImageUrl,
-                          height: 40,
-                          width: 40,
-                          fit: BoxFit.cover,
-                        ),
-                      )
-                          : Icon(Icons.account_circle, size: 40);
+                      return GestureDetector(
+                        onTap: () {
+                          context.goNamed('profile');
+                        },
+                        child: profileImageUrl != null
+                            ? ClipOval(
+                                child: Image.network(
+                                  profileImageUrl,
+                                  height: 40,
+                                  width: 40,
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                            : Icon(Icons.account_circle, size: 40),
+                      );
                     } else {
                       return Icon(Icons.account_circle, size: 40);
                     }

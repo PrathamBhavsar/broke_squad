@@ -1,11 +1,15 @@
+import 'package:contri_buter/providers/auth_provider.dart';
 import 'package:contri_buter/providers/user_provider.dart';
-import 'package:contri_buter/screens/home_screen/widgets/add_costs_button.dart';
 import 'package:contri_buter/screens/home_screen/widgets/appbar_widget.dart';
+import 'package:contri_buter/screens/home_screen/widgets/filter_widget.dart';
 import 'package:contri_buter/screens/home_screen/widgets/info_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:contri_buter/constants/UI.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+
+import '../../models/demo_transactions.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -38,33 +42,47 @@ class _HomeScreenState extends State<HomeScreen> {
     return ChangeNotifierProvider(
       create: (_) => UserProvider(),
       builder: (context, child) {
-        return GestureDetector(
-          onTap: () {
-            FocusScope.of(context).unfocus();
-          },
-          child: Scaffold(
-            appBar: AppBar(
-              automaticallyImplyLeading: false, // Removes the back button
-
-              title: AppbarWidget(),
-            ),
-            body: Padding(
-              padding: AppPaddings.scaffoldPadding,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  InfoWidget(),
-                  SizedBox(height: 10),
-                  // Add any additional widgets here
-                  Expanded(
-                    child: Container(
-                        // This container will take up the remaining space
-                        ),
+        return Scaffold(
+          floatingActionButton: SizedBox(
+            height: 65,
+            width: 65,
+            child: FloatingActionButton(
+                shape: CircleBorder(),
+                child: Icon(
+                  Icons.add,
+                  color: AppColors.white,
+                  size: 30,
+                ),
+                backgroundColor: AppColors.kDarkColor,
+                onPressed: () {
+                  context.goNamed('createBill');
+                }),
+          ),
+          appBar: AppBar(
+            automaticallyImplyLeading: false,
+            title: AppbarWidget(),
+          ),
+          body: Padding(
+            padding: AppPaddings.scaffoldPadding,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                InfoWidget(),
+                SizedBox(height: 10),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Transactions',
+                    style: AppTextStyles.kPhoneInputTextFieldTextStyle,
                   ),
-                  SizedBox(height: 10),
-                  AddCostsButton(),
-                ],
-              ),
+                ),
+                SizedBox(height: 10),
+                Expanded(
+                  child: TransactionFilterWidget(
+                    transactions: demoTransactions,
+                  ),
+                ),
+              ],
             ),
           ),
         );
