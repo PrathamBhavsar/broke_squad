@@ -10,10 +10,13 @@ class AppColors {
   static Color white = Color(0xFFFFFFFF);
   static Color kPrimaryColor = Color(0xFFE14150);
   static Color kDarkColor = Color(0xFF000000);
+  static Color kAuthTextFieldColor = Color.fromRGBO(235, 240, 245, 1);
 }
 
 class AppPaddings {
   static EdgeInsetsGeometry scaffoldPadding =  EdgeInsets.fromLTRB(12, 12, 12, 12);
+
+  static EdgeInsetsGeometry getBottomPadding(context) => EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom);
 
   // static EdgeInsetsGeometry scaffoldPadding = EdgeInsets.fromLTRB(left, top, right, bottom)
 }

@@ -1,5 +1,4 @@
 import 'package:contri_buter/constants/UI.dart';
-import 'package:contri_buter/constants/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_onboarding_slider/flutter_onboarding_slider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

@@ -1,3 +1,4 @@
+import 'package:contri_buter/screens/auth/new_otp_screen.dart';
 import 'package:contri_buter/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -5,8 +6,6 @@ import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:provider/provider.dart';
 import 'package:contri_buter/constants/UI.dart';
 import 'package:contri_buter/providers/auth_provider.dart';
-
-import 'otp_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -17,19 +16,29 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final FocusNode phoneFocusNode = FocusNode();
+  final ScrollController scrollController = ScrollController();
+  // final TextEditingController phoneController = TextEditingController();
   final TextEditingController areaCodeController =
       TextEditingController(text: "+91"); // Default area code
   PhoneNumber phoneNumber = PhoneNumber();
 
   @override
+  void initState() {
+    scrollController.addListener(() => phoneFocusNode.unfocus(),);
+    super.initState();
+  }
+  @override
   void dispose() {
+    // Clean up the controllers and focus nodes when the widget is disposed
     phoneFocusNode.dispose();
+    // phoneController.dispose();
     areaCodeController.dispose();
     super.dispose();
   }
 
   void _manageLogin() async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    Navigator.push(context, MaterialPageRoute(builder: (context) => OptInputScreen(),));
     String? phNo = phoneNumber.phoneNumber;
     String? code = phoneNumber.dialCode;
     if (phNo == null || code == null || phNo.length < 12 || code.isEmpty) {
@@ -69,6 +78,8 @@ class _LoginScreenState extends State<LoginScreen> {
               bottom: MediaQuery.viewInsetsOf(context).bottom,
             ),
             child: SingleChildScrollView(
+              reverse: true,
+              controller: scrollController,
               child: SizedBox(
                 height: getHeight(context) - kBottomNavigationBarHeight,
                 child: Padding(
@@ -120,7 +131,7 @@ class _LoginScreenState extends State<LoginScreen> {
           borderRadius: BorderRadius.circular(12.r),
           borderSide: BorderSide.none,
         ),
-        fillColor: Color.fromRGBO(235, 240, 245, 1),
+        fillColor:AppColors.kAuthTextFieldColor,
         filled: true,
       ),
       formatInput: true,
@@ -136,33 +147,25 @@ class _LoginScreenState extends State<LoginScreen> {
       onInputChanged: (value) => phoneNumber = value,
     );
   }
-
-  Widget _buildSubmitButton() {
-    return Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context)
-            .viewInsets
-            .bottom, // Add padding for keyboard
-      ),
-      child: ElevatedButton(
-        onPressed: _manageLogin,
-        child: Text(
-          'SEND OTP',
-          style: AppTextStyles.poppins.copyWith(
-            letterSpacing: 1.5,
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 14.sp,
-          ),
+  _buildSubmitButton() {
+    return ElevatedButton(
+      onPressed: _manageLogin,
+      child: Text(
+        'SEND OTP',
+        style: AppTextStyles.poppins.copyWith(
+          letterSpacing: 1.5,
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+          fontSize: 14.sp,
         ),
-        style: ButtonStyle(
-          padding:
-              MaterialStateProperty.all(EdgeInsets.symmetric(vertical: 15)),
-          backgroundColor: MaterialStateProperty.all(AppColors.kPrimaryColor),
-          shape: MaterialStateProperty.all(
-            RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12.r),
-            ),
+      ),
+      style: ButtonStyle(
+        padding: WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 15)),
+        backgroundColor:
+        WidgetStatePropertyAll(AppColors.kPrimaryColor),
+        shape: WidgetStatePropertyAll(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.r),
           ),
         ),
       ),
