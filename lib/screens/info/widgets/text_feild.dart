@@ -1,8 +1,6 @@
 import 'package:contri_buter/constants/UI.dart';
-import 'package:contri_buter/providers/auth_provider.dart';
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 
 class NameTextField extends StatelessWidget {

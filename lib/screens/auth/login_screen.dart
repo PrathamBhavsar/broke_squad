@@ -1,3 +1,4 @@
+import 'package:contri_buter/screens/auth/new_otp_screen.dart';
 import 'package:contri_buter/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -15,11 +16,17 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final FocusNode phoneFocusNode = FocusNode();
+  final ScrollController scrollController = ScrollController();
   // final TextEditingController phoneController = TextEditingController();
   final TextEditingController areaCodeController =
       TextEditingController(text: "+91"); // Default area code
   PhoneNumber phoneNumber = PhoneNumber();
 
+  @override
+  void initState() {
+    scrollController.addListener(() => phoneFocusNode.unfocus(),);
+    super.initState();
+  }
   @override
   void dispose() {
     // Clean up the controllers and focus nodes when the widget is disposed
@@ -30,6 +37,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   _manageLogin() async {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => OptInputScreen(),));
     String? phNo = phoneNumber.phoneNumber;
     String? code = phoneNumber.dialCode;
     if (phNo == null || code == null) {
@@ -70,6 +78,8 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Padding(
             padding:  EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
             child: SingleChildScrollView(
+              reverse: true,
+              controller: scrollController,
               child: SizedBox(
                 height: getHeight(context) - kBottomNavigationBarHeight,
                 child: Padding(
@@ -121,7 +131,7 @@ class _LoginScreenState extends State<LoginScreen> {
           border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12.r),
               borderSide: BorderSide.none),
-          fillColor: Color.fromRGBO(235, 240, 245, 1),
+          fillColor: AppColors.kAuthTextFieldColor,
           filled: true,
         ),
         formatInput: true,

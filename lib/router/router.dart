@@ -1,5 +1,6 @@
 import 'package:contri_buter/screens/add_costs/add_costs_screen.dart';
 import 'package:contri_buter/screens/auth/login_screen.dart';
+import 'package:contri_buter/screens/auth/new_otp_screen.dart';
 import 'package:contri_buter/screens/home_screen/home_screen.dart';
 import 'package:contri_buter/screens/onboarding/onboarding_screen.dart';
 import 'package:contri_buter/screens/splash_screen.dart';
@@ -23,6 +24,11 @@ abstract class MyRouter {
       builder: (context, state) => LoginScreen(),
     ),
     GoRoute(
+      path: '/otp_screen',
+      name: 'otp_screen',
+      builder: (context, state) => OptInputScreen(),
+    ),
+    GoRoute(
       path: '/home',
       name: 'home',
       builder: (context, state) => HomeScreen(),
@@ -31,6 +37,7 @@ abstract class MyRouter {
       path: '/add_costs',
       name: 'add_costs',
       builder: (context, state) => AddCostsScreen(),
-    )
+    ),
+
   ]);
 }

@@ -51,6 +51,9 @@ dependencies:
   flutter_screenutil: ^5.9.3
   logger: ^2.4.0
   intl_phone_number_input: ^0.7.4
+  pinput: ^5.0.0
+  font_awesome_flutter: ^10.7.0
+  fluttertoast: ^8.2.8
 
 dev_dependencies:
   flutter_test:

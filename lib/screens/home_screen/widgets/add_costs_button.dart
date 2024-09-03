@@ -1,9 +1,6 @@
 import 'package:contri_buter/constants/UI.dart';
-import 'package:contri_buter/constants/routes.dart';
-import 'package:contri_buter/providers/navigation_provider.dart';
 import 'package:contri_buter/screens/add_costs/add_costs_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class AddCostsButton extends StatelessWidget {
   const AddCostsButton({super.key});
