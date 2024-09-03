@@ -1,8 +1,6 @@
 import 'package:contri_buter/providers/navigation_provider.dart';
 import 'package:contri_buter/screens/add_costs/next_button.dart';
 import 'package:contri_buter/screens/add_costs/text_fields.dart';
-import 'package:contri_buter/screens/home_screen/widgets/add_costs_button.dart';
-import 'package:contri_buter/screens/home_screen/widgets/info_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:contri_buter/constants/UI.dart';
