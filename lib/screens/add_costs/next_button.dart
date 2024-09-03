@@ -1,8 +1,6 @@
 import 'package:contri_buter/constants/UI.dart';
-import 'package:contri_buter/constants/routes.dart';
-import 'package:contri_buter/providers/navigation_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 
 class NextButton extends StatelessWidget {
   const NextButton({super.key});
@@ -11,8 +9,7 @@ class NextButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Provider.of<NavigationProvider>(context, listen: false)
-            .navigateTo(context, Routes.addCosts);
+        context.goNamed('addCosts');
       },
       child: Container(
         height: 70,

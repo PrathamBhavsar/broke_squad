@@ -1,10 +1,7 @@
-import 'package:contri_buter/providers/navigation_provider.dart';
 import 'package:contri_buter/screens/add_costs/next_button.dart';
 import 'package:contri_buter/screens/add_costs/text_fields.dart';
-import 'package:contri_buter/screens/home_screen/widgets/add_costs_button.dart';
-import 'package:contri_buter/screens/home_screen/widgets/info_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 import 'package:contri_buter/constants/UI.dart';
 
 class AddCostsScreen extends StatefulWidget {
@@ -31,8 +28,7 @@ class _AddCostsScreenState extends State<AddCostsScreen> {
         appBar: AppBar(
           leading: IconButton(
               onPressed: () {
-                Provider.of<NavigationProvider>(context, listen: false)
-                    .pop(context);
+                context.goNamed('home');
               },
               icon: Icon(Icons.close_rounded)),
         ),

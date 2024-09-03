@@ -24,11 +24,11 @@ class LoginButton extends StatelessWidget {
             if (authProvider.isLoading) return;
 
             // Request OTP using the phone number provided
-            await authProvider.requestOtp(
-              '+91',
-              int.parse(phoneController.text),
-              context,
-            );
+            // await authProvider.requestOtp(
+            //   '+1191',
+            //   int.parse(phoneController.text),
+            //   context,
+            // );
 
             // If the OTP is sent, show a dialog to enter the OTP
             if (!authProvider.isLoading) {
@@ -84,7 +84,6 @@ class LoginButton extends StatelessWidget {
                   await authProvider.verifyOtp(
                     otpController.text,
                     context,
-                    '+91', // Example area code; make sure it matches the request
                     int.parse(phoneController.text),
                   );
 

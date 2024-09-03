@@ -3,11 +3,10 @@ import 'package:contri_buter/constants/routes.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'dart:io';
-
-import 'navigation_provider.dart';
 
 class InfoProvider extends ChangeNotifier {
   bool _isLoading = true;
@@ -56,7 +55,10 @@ class InfoProvider extends ChangeNotifier {
     try {
       final File file = File(_profileImage!);
       final String fileName = FirebaseAuth.instance.currentUser!.uid;
-      final Reference storageRef = FirebaseStorage.instance.ref().child('profile_images').child(fileName);
+      final Reference storageRef = FirebaseStorage.instance
+          .ref()
+          .child('profile_images')
+          .child(fileName);
 
       final UploadTask uploadTask = storageRef.putFile(file);
       final TaskSnapshot snapshot = await uploadTask;
@@ -83,9 +85,7 @@ class InfoProvider extends ChangeNotifier {
           .update({'user_name': userName, 'profile_image': profileImageUrl});
       print('User updated with ID: ${userId}');
 
-
-      Provider.of<NavigationProvider>(context, listen: false)
-          .navigateTo(context, Routes.home);
+      context.goNamed('home');
     } catch (error) {
       print('Update user error: $error');
     }

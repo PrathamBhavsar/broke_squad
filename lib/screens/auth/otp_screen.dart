@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:contri_buter/providers/auth_provider.dart';
 
 class OtpScreen extends StatefulWidget {
-  final dynamic phoneNumber;
+  final int phoneNumber;
 
   const OtpScreen({super.key, required this.phoneNumber});
 
@@ -43,8 +43,7 @@ class _OtpScreenState extends State<OtpScreen> {
                   await authProvider.verifyOtp(
                     otpController.text,
                     context,
-                    '+91', // Example area code; make sure it matches the request
-                    widget.phoneNumber, // Replace with the actual phone number
+                    widget.phoneNumber,
                   );
 
                   Navigator.of(context).pop(); // Close the OTP dialog
@@ -62,59 +61,50 @@ class _OtpScreenState extends State<OtpScreen> {
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
 
-    return ChangeNotifierProvider(
-      create: (_) => AuthProvider(),
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('Enter OTP'),
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'Please enter the OTP sent to your phone number.',
-                style: TextStyle(fontSize: 16),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Enter OTP'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Please enter the OTP sent to your phone number.',
+              style: TextStyle(fontSize: 16),
+            ),
+            SizedBox(height: 20),
+            TextField(
+              controller: otpController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: 'OTP',
+                border: OutlineInputBorder(),
               ),
-              SizedBox(height: 20),
-              TextField(
-                controller: otpController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: 'OTP',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () async {
-                  if (authProvider.isLoading) return;
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () async {
+                if (authProvider.isLoading) return;
 
-                  // Verify OTP
-                  await authProvider.verifyOtp(
-                    otpController.text,
-                    context,
-                    '+91', // Example area code; ensure it matches the request
-                    widget.phoneNumber, // Replace with the actual phone number
-                  );
-
-                  // Navigate to the appropriate screen based on the result
-                  if (!authProvider.isLoading) {
-                    context.goNamed('home');
-                  }
-                },
-                child: authProvider.isLoading
-                    ? CircularProgressIndicator(color: Colors.white)
-                    : Text('Verify'),
-              ),
-              SizedBox(height: 20),
-              TextButton(
-                onPressed: () => _showOtpDialog(context, authProvider),
-                child: Text('Resend OTP'),
-              ),
-            ],
-          ),
+                // Verify OTP
+                await authProvider.verifyOtp(
+                  otpController.text,
+                  context,
+                  widget.phoneNumber,
+                );
+              },
+              child: authProvider.isLoading
+                  ? CircularProgressIndicator(color: Colors.white)
+                  : Text('Verify'),
+            ),
+            SizedBox(height: 20),
+            TextButton(
+              onPressed: () => _showOtpDialog(context, authProvider),
+              child: Text('Resend OTP'),
+            ),
+          ],
         ),
       ),
     );
