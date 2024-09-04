@@ -1,10 +1,9 @@
-import 'package:contri_buter/providers/auth_provider.dart';
 import 'package:contri_buter/providers/user_provider.dart';
+import 'package:contri_buter/screens/create_bill_screen/create_bill_screen.dart';
 import 'package:contri_buter/screens/home_screen/widgets/appbar_widget.dart';
 import 'package:contri_buter/screens/home_screen/widgets/filter_widget.dart';
 import 'package:contri_buter/screens/home_screen/widgets/info_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:contri_buter/constants/UI.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -55,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 backgroundColor: AppColors.kDarkColor,
                 onPressed: () {
-                  context.goNamed('createBill');
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => CreateBillScreen(),));
                 }),
           ),
           appBar: AppBar(
