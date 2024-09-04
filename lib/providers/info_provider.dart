@@ -10,8 +10,6 @@ class InfoProvider extends ChangeNotifier {
 
   bool get isLoading => _isLoading;
 
-
-
   setImage(String imageUrl) => _profileImage = imageUrl;
   // Future<void> pickImageFromCamera() async {
   //   final ImagePicker picker = ImagePicker();
@@ -60,14 +58,14 @@ class InfoProvider extends ChangeNotifier {
   Future<void> editUserEntry(String userName, BuildContext context) async {
     final firestore = FirebaseFirestore.instance;
     final auth = FirebaseAuth.instance;
-    final userId = auth.currentUser!.uid;
+    final phoneNo = auth.currentUser!.phoneNumber;
 
     try {
       await firestore
           .collection('users')
-          .doc(userId)
+          .doc(phoneNo)
           .update({'user_name': userName, 'profile_image': _profileImage});
-      print('User updated with ID: ${userId}');
+      print('User updated with ID: ${phoneNo}');
 
       context.goNamed('home');
     } catch (error) {

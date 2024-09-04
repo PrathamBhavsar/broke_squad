@@ -141,7 +141,10 @@ class AuthProvider extends ChangeNotifier {
     );
 
     try {
-      await firestore.collection('users').doc(user.uid).set(newUser.toJson());
+      await firestore
+          .collection('users')
+          .doc('+$phoneNumber')
+          .set(newUser.toJson());
       print('User created with ID: ${user.uid}');
     } catch (error) {
       print('Failed to create user entry: $error');

@@ -1,15 +1,18 @@
 import 'package:contri_buter/constants/UI.dart';
 import 'package:contri_buter/models/transaction.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
-import '../../../providers/user_provider.dart';
 
 class TransactionFilterWidget extends StatefulWidget {
   final List<TransactionModel> transactions;
+  final String selectedGroup; // Accept the selected group as a parameter
+  final Function(String)
+      onGroupSelected; // Callback to notify when a group is selected
 
-  TransactionFilterWidget({required this.transactions});
+  TransactionFilterWidget({
+    required this.transactions,
+    required this.selectedGroup, // Pass the selected group
+    required this.onGroupSelected, // Pass the callback function
+  });
 
   @override
   _TransactionFilterWidgetState createState() =>
@@ -17,26 +20,6 @@ class TransactionFilterWidget extends StatefulWidget {
 }
 
 class _TransactionFilterWidgetState extends State<TransactionFilterWidget> {
-  String selectedGroup = 'All';
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final userProvider = Provider.of<UserProvider>(context, listen: false);
-      User? user = FirebaseAuth.instance.currentUser;
-
-      if (user != null) {
-        userProvider.fetchProfileImage(user);
-        userProvider.fetchTransactions();
-      }
-    });
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-  }
-
   @override
   Widget build(BuildContext context) {
     print('Transactions: ${widget.transactions}');
@@ -72,11 +55,9 @@ class _TransactionFilterWidgetState extends State<TransactionFilterWidget> {
                       style: AppTextStyles.kTransactionSubtitleTextStyle,
                     ),
                   ),
-                  selected: selectedGroup == 'All',
+                  selected: widget.selectedGroup == 'All',
                   onSelected: (isSelected) {
-                    setState(() {
-                      selectedGroup = 'All';
-                    });
+                    widget.onGroupSelected('All'); // Notify parent widget
                   },
                 ),
                 ...groupNames.map((groupName) => FilterChip(
@@ -93,11 +74,10 @@ class _TransactionFilterWidgetState extends State<TransactionFilterWidget> {
                         child: Text(groupName,
                             style: AppTextStyles.kTransactionSubtitleTextStyle),
                       ),
-                      selected: selectedGroup == groupName,
+                      selected: widget.selectedGroup == groupName,
                       onSelected: (isSelected) {
-                        setState(() {
-                          selectedGroup = groupName;
-                        });
+                        widget
+                            .onGroupSelected(groupName); // Notify parent widget
                       },
                     )),
               ],
@@ -112,8 +92,8 @@ class _TransactionFilterWidgetState extends State<TransactionFilterWidget> {
             itemCount: widget.transactions.length,
             itemBuilder: (context, index) {
               final transaction = widget.transactions[index];
-              if (selectedGroup == 'All' ||
-                  transaction.groupName == selectedGroup) {
+              if (widget.selectedGroup == 'All' ||
+                  transaction.groupName == widget.selectedGroup) {
                 return Column(
                   children: [
                     Container(
@@ -123,7 +103,7 @@ class _TransactionFilterWidgetState extends State<TransactionFilterWidget> {
                           borderRadius: BorderRadiusDirectional.circular(20)),
                       child: ListTile(
                         title: Text(
-                          transaction.title, // Updated to use title
+                          transaction.title,
                           style: AppTextStyles.kTransactionTitleTextStyle,
                         ),
                         subtitle: Row(

@@ -37,7 +37,7 @@ class UserProvider extends ChangeNotifier {
 
     try {
       DocumentSnapshot userDoc =
-          await _firestore.collection('users').doc(user.uid).get();
+          await _firestore.collection('users').doc(user.phoneNumber).get();
 
       if (userDoc.exists) {
         String? profileImageUrl = userDoc.get('profile_image');
