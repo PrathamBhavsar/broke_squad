@@ -4,22 +4,24 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class CreateBillTextField extends StatelessWidget {
   const CreateBillTextField({
     super.key,
-    required TextEditingController billNameController,
-    required FocusNode billNameFocusNode,
-    this.hintText,
-  }) : _textController = billNameController, _focusNode = billNameFocusNode;
+    required this.textController,
+    required this.focusNode,
+    this.hintText, this.keyboardType,
+  });
 
-  final TextEditingController _textController;
-  final FocusNode _focusNode;
+  final TextEditingController textController;
+  final FocusNode focusNode;
   final String? hintText;
+  final TextInputType? keyboardType;
 
   @override
   Widget build(BuildContext context) {
     return TextField(
       style: AppTextStyles.kCreateBillTextFieldTextStyle,
-      controller: _textController,
-      focusNode: _focusNode,
+      controller: textController,
+      focusNode: focusNode,
       cursorColor: AppColors.grey,
+      keyboardType:keyboardType,
       decoration: InputDecoration(
         hintText: hintText,
         hintStyle: AppTextStyles.kCreateBillTextFieldTextStyle,

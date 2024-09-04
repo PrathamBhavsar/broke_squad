@@ -1,4 +1,5 @@
 import 'package:contri_buter/providers/auth_provider.dart';
+import 'package:contri_buter/providers/split_provider.dart';
 import 'package:contri_buter/providers/user_provider.dart';
 import 'package:contri_buter/router/router.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -17,6 +18,7 @@ Future<void> main() async {
       providers: [
         ChangeNotifierProvider(create: (context) => UserProvider()),
         ChangeNotifierProvider(create: (context) => AuthProvider()),
+        ChangeNotifierProvider(create: (context) => SplitProvider.instance),
       ],
       child: ScreenUtilInit(
         builder: (context, child) => MyApp(),
