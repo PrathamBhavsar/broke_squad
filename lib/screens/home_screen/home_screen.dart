@@ -1,4 +1,3 @@
-import 'package:contri_buter/providers/auth_provider.dart';
 import 'package:contri_buter/providers/user_provider.dart';
 import 'package:contri_buter/screens/home_screen/widgets/appbar_widget.dart';
 import 'package:contri_buter/screens/home_screen/widgets/filter_widget.dart';
@@ -7,9 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:contri_buter/constants/UI.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-
-import '../../models/demo_transactions.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -19,21 +15,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  FocusNode emailFocusNode = FocusNode();
-  FocusNode passwordFocusNode = FocusNode();
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
-
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final homeProvider = Provider.of<UserProvider>(context, listen: false);
-      User? user = FirebaseAuth.instance.currentUser;
-
-      if (user != null) {
-        homeProvider.fetchProfileImage(user);
-      }
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
+      userProvider.fetchTransactions();
     });
   }
 
@@ -42,21 +29,25 @@ class _HomeScreenState extends State<HomeScreen> {
     return ChangeNotifierProvider(
       create: (_) => UserProvider(),
       builder: (context, child) {
+        final userProvider = Provider.of<UserProvider>(context);
+        final transactions = userProvider.transactions;
+
         return Scaffold(
           floatingActionButton: SizedBox(
             height: 65,
             width: 65,
             child: FloatingActionButton(
-                shape: CircleBorder(),
-                child: Icon(
-                  Icons.add,
-                  color: AppColors.white,
-                  size: 30,
-                ),
-                backgroundColor: AppColors.kDarkColor,
-                onPressed: () {
-                  context.goNamed('createBill');
-                }),
+              shape: CircleBorder(),
+              child: Icon(
+                Icons.add,
+                color: AppColors.white,
+                size: 30,
+              ),
+              backgroundColor: AppColors.kDarkColor,
+              onPressed: () {
+                context.goNamed('createBill');
+              },
+            ),
           ),
           appBar: AppBar(
             automaticallyImplyLeading: false,
@@ -79,7 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 SizedBox(height: 10),
                 Expanded(
                   child: TransactionFilterWidget(
-                    transactions: demoTransactions,
+                    transactions: userProvider.transactions,
                   ),
                 ),
               ],

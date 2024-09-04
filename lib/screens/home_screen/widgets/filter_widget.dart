@@ -1,9 +1,13 @@
 import 'package:contri_buter/constants/UI.dart';
 import 'package:contri_buter/models/transaction.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../../../providers/user_provider.dart';
 
 class TransactionFilterWidget extends StatefulWidget {
-  final List<Transaction> transactions;
+  final List<TransactionModel> transactions;
 
   TransactionFilterWidget({required this.transactions});
 
@@ -14,12 +18,32 @@ class TransactionFilterWidget extends StatefulWidget {
 
 class _TransactionFilterWidgetState extends State<TransactionFilterWidget> {
   String selectedGroup = 'All';
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
+      User? user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+        userProvider.fetchProfileImage(user);
+        userProvider.fetchTransactions();
+      }
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final Set<String> groupNames = widget.transactions
-        .map((transaction) => transaction.groupName ?? 'Unknown Group')
-        .toSet();
+    print('Transactions: ${widget.transactions}');
+
+    final Set<String> groupNames =
+        widget.transactions.map((transaction) => transaction.groupName).toSet();
+    print('Group Names: $groupNames');
 
     return Column(
       children: [
@@ -88,7 +112,6 @@ class _TransactionFilterWidgetState extends State<TransactionFilterWidget> {
             itemCount: widget.transactions.length,
             itemBuilder: (context, index) {
               final transaction = widget.transactions[index];
-              // Null-safe check for group name comparison
               if (selectedGroup == 'All' ||
                   transaction.groupName == selectedGroup) {
                 return Column(
@@ -100,9 +123,9 @@ class _TransactionFilterWidgetState extends State<TransactionFilterWidget> {
                           borderRadius: BorderRadiusDirectional.circular(20)),
                       child: ListTile(
                         title: Text(
-                          transaction.category ?? 'Unknown Category',
+                          transaction.title, // Updated to use title
                           style: AppTextStyles.kTransactionTitleTextStyle,
-                        ), // Null-safe access
+                        ),
                         subtitle: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -111,11 +134,11 @@ class _TransactionFilterWidgetState extends State<TransactionFilterWidget> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                    '${transaction.contributors.join(", ")} paid for',
+                                    '${transaction.contributors.keys.join(", ")} paid for',
                                     style: AppTextStyles
                                         .kTransactionSubtitleTextStyle),
                                 Text(
-                                    '${transaction.unpaidParticipants.join(", ")}',
+                                    '${transaction.unpaidParticipants.keys.join(", ")}',
                                     style: AppTextStyles
                                         .kTransactionSubtitleTextStyle),
                                 Text('${transaction.dateTime.toLocal()}',

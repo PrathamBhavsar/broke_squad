@@ -47,7 +47,6 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     } else {
       logEvent(str: '$phNo');
-
       // Request OTP using the phone number provided
       await authProvider.requestOtp(
         int.parse(phNo),
@@ -151,26 +150,47 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   _buildSubmitButton() {
-    return ElevatedButton(
-      onPressed: _manageLogin,
-      child: Text(
-        'SEND OTP',
-        style: AppTextStyles.poppins.copyWith(
-          letterSpacing: 1.5,
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
-          fontSize: 14.sp,
-        ),
-      ),
-      style: ButtonStyle(
-        padding: WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 15)),
-        backgroundColor: WidgetStatePropertyAll(AppColors.kPrimaryColor),
-        shape: WidgetStatePropertyAll(
-          RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12.r),
+    return Consumer<AuthProvider>(
+      builder: (context, authProvider, child) {
+        return ElevatedButton(
+          onPressed: authProvider.isLoading
+              ? null
+              : _manageLogin, // Disable button when loading
+          child: authProvider.isLoading
+              ? SizedBox(
+                  width: 20.w,
+                  height: 20.h,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ),
+                )
+              : Text(
+                  'SEND OTP',
+                  style: AppTextStyles.poppins.copyWith(
+                    letterSpacing: 1.5,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14.sp,
+                  ),
+                ),
+          style: ButtonStyle(
+            padding: MaterialStateProperty.all(
+              EdgeInsets.symmetric(vertical: 15),
+            ),
+            backgroundColor: MaterialStateProperty.all(
+              authProvider.isLoading
+                  ? Colors.grey
+                  : AppColors.kPrimaryColor, // Change button color when loading
+            ),
+            shape: MaterialStateProperty.all(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12.r),
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
