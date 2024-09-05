@@ -8,8 +8,7 @@ class TransactionFilterWidget extends StatefulWidget {
   TransactionFilterWidget({required this.transactions});
 
   @override
-  _TransactionFilterWidgetState createState() =>
-      _TransactionFilterWidgetState();
+  _TransactionFilterWidgetState createState() => _TransactionFilterWidgetState();
 }
 
 class _TransactionFilterWidgetState extends State<TransactionFilterWidget> {
@@ -17,9 +16,8 @@ class _TransactionFilterWidgetState extends State<TransactionFilterWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final Set<String> groupNames = widget.transactions
-        .map((transaction) => transaction.groupName ?? 'Unknown Group')
-        .toSet();
+    final Set<String> groupNames =
+        widget.transactions.map((transaction) => transaction.groupName ?? 'Unknown Group').toSet();
 
     return Column(
       children: [
@@ -66,8 +64,7 @@ class _TransactionFilterWidgetState extends State<TransactionFilterWidget> {
                       ),
                       label: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 2.0),
-                        child: Text(groupName,
-                            style: AppTextStyles.kTransactionSubtitleTextStyle),
+                        child: Text(groupName, style: AppTextStyles.kTransactionSubtitleTextStyle),
                       ),
                       selected: selectedGroup == groupName,
                       onSelected: (isSelected) {
@@ -89,14 +86,12 @@ class _TransactionFilterWidgetState extends State<TransactionFilterWidget> {
             itemBuilder: (context, index) {
               final transaction = widget.transactions[index];
               // Null-safe check for group name comparison
-              if (selectedGroup == 'All' ||
-                  transaction.groupName == selectedGroup) {
+              if (selectedGroup == 'All' || transaction.groupName == selectedGroup) {
                 return Column(
                   children: [
                     Container(
                       decoration: BoxDecoration(
-                          border: Border.all(
-                              color: AppColors.accentColor, width: 2),
+                          border: Border.all(color: AppColors.accentColor, width: 2),
                           borderRadius: BorderRadiusDirectional.circular(20)),
                       child: ListTile(
                         title: Text(
@@ -110,22 +105,18 @@ class _TransactionFilterWidgetState extends State<TransactionFilterWidget> {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                    '${transaction.contributors.join(", ")} paid for',
-                                    style: AppTextStyles
-                                        .kTransactionSubtitleTextStyle),
-                                Text(
-                                    '${transaction.unpaidParticipants.join(", ")}',
-                                    style: AppTextStyles
-                                        .kTransactionSubtitleTextStyle),
+                                for (var element in transaction.contributors)
+                                  Text('${element.name} paid for',
+                                      style: AppTextStyles.kTransactionSubtitleTextStyle),
+                                for (var element in transaction.unpaidParticipants)
+                                Text('${element.name}',
+                                    style: AppTextStyles.kTransactionSubtitleTextStyle),
                                 Text('${transaction.dateTime.toLocal()}',
-                                    style: AppTextStyles
-                                        .kTransactionSubtitleTextStyle),
+                                    style: AppTextStyles.kTransactionSubtitleTextStyle),
                               ],
                             ),
                             Text('\$${transaction.amount.toStringAsFixed(2)}',
-                                style:
-                                    AppTextStyles.kTransactionTitleTextStyle),
+                                style: AppTextStyles.kTransactionTitleTextStyle),
                           ],
                         ),
                       ),

@@ -28,6 +28,13 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
   final FocusNode _amountFocusNode = FocusNode();
 
   @override
+  void initState() {
+    _searchController.addListener(() {
+      SplitProvider.instance.filterContact(_searchController.text);
+    },);
+    super.initState();
+  }
+  @override
   void didChangeDependencies() async {
     await Future.delayed(Duration(milliseconds: 200));
     SplitProvider.instance.getContact();
@@ -113,7 +120,7 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
           ),
         ),
         spaceH10(),
-        CreateBillTextField(
+        CreateBillViewTextField(
           textController: _searchController,
           focusNode: _searchFocusNode,
           hintText: 'Search...',
@@ -124,31 +131,31 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
         Flexible(
           child: SizedBox(
             height: getHeight(context),
-            child: ListView.builder(
+            child: splitProvider.displayContacts.isEmpty ? Text('Nothing to Show',style: AppTextStyles.poppins.copyWith(color: AppColors.grey,fontWeight: FontWeight.w500),) : ListView.builder(
               itemBuilder: (context, index) {
                 return ListTile(
-                  leading: ContactCircleAvatar(contact: splitProvider.allContacts[index]),
+                  leading: ContactCircleAvatar(contact: splitProvider.displayContacts[index]),
                   title: Text(
-                    splitProvider.allContacts[index].name,
+                    splitProvider.displayContacts[index].name,
                     style: AppTextStyles.kCreateBillAppBarTitleTextStyle.copyWith(fontSize: 13.sp),
                   ),
-                  subtitle: Text(splitProvider.allContacts[index].phNo,
+                  subtitle: Text(splitProvider.displayContacts[index].phNo,
                       style: AppTextStyles.kCreateBillAppBarTitleTextStyle
                           .copyWith(fontSize: 12.sp, fontWeight: FontWeight.w500)),
                   trailing: Checkbox(
                     value: splitProvider.selectedContacts.isNotEmpty
-                        ? splitProvider.selectedContacts.contains(splitProvider.allContacts[index])
+                        ? splitProvider.selectedContacts.contains(splitProvider.displayContacts[index])
                         : false,
                     onChanged: (value) => setState(() => value != null
                         ? (!value
-                            ? splitProvider.removeContact(splitProvider.allContacts[index])
-                            : splitProvider.addContact(splitProvider.allContacts[index]))
+                            ? splitProvider.removeContact(splitProvider.displayContacts[index])
+                            : splitProvider.addContact(splitProvider.displayContacts[index]))
                         : null),
                     shape: CircleBorder(),
                   ),
                 );
               },
-              itemCount: splitProvider.allContacts.length,
+              itemCount: splitProvider.displayContacts.length,
             ),
           ),
         ),
@@ -188,7 +195,7 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
             style: AppTextStyles.kCreateBillAppBarTitleTextStyle.copyWith(fontSize: 14.sp),
           ),
         ),
-        CreateBillTextField(
+        CreateBillViewTextField(
           textController: _billNameController,
           focusNode: _billNameFocusNode,
           hintText: 'Enter Bill Name',
@@ -201,7 +208,7 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
             style: AppTextStyles.kCreateBillAppBarTitleTextStyle.copyWith(fontSize: 14.sp),
           ),
         ),
-        CreateBillTextField(
+        CreateBillViewTextField(
           textController: _amountController,
           focusNode: _amountFocusNode,
           hintText: 'Enter Bill Amount',

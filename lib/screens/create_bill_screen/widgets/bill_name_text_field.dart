@@ -1,8 +1,8 @@
 import 'package:contri_buter/constants/UI.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-class CreateBillTextField extends StatelessWidget {
-  const CreateBillTextField({
+class CreateBillViewTextField extends StatelessWidget {
+  const CreateBillViewTextField({
     super.key,
     required this.textController,
     required this.focusNode,

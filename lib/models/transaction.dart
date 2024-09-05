@@ -1,9 +1,11 @@
+import 'package:contri_buter/models/contacts.dart';
+
 class Transaction {
   final String category;
-  final List<String> contributors;
+  final List<MyContact> contributors;
   final DateTime dateTime;
   final double amount;
-  final List<String> unpaidParticipants;
+  final List<MyContact> unpaidParticipants;
   final String groupName;
 
   Transaction({

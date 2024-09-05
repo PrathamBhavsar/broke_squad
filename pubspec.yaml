@@ -56,6 +56,8 @@ dependencies:
   fluttertoast: ^8.2.8
   cached_network_image: ^3.4.1
   dotted_border: ^2.1.0
+  flutter_contacts: ^1.1.9+2
+  phone_number: ^2.1.0
 
 dev_dependencies:
   flutter_test:
