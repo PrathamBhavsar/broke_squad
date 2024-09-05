@@ -15,8 +15,8 @@ class InfoWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Define a list of light colors
-    final List<Color> lightColors = [
+    // Define a list of fixed colors based on category name hash
+    final List<Color> colorPalette = [
       Color(0xFFD6CCFB), // Light purple
       Color(0xFFFFD9A7), // Light orange
       Color(0xFFBEF0CA), // Light green
@@ -48,11 +48,66 @@ class InfoWidget extends StatelessWidget {
         ? categoryTotals.values.reduce((a, b) => a > b ? a : b)
         : 0;
 
-    // Random number generator for color selection
-    final random = Random();
+    // Set parameters for positioning
+    final double containerWidth = 400.0; // Width of the container
+    final double containerHeight = 310.0; // Height of the container
+    final double radius = min(containerWidth, containerHeight) *
+        0.3; // Radius for positioning circles
+    final double centerX = containerWidth / 2; // Center X coordinate
+    final double centerY = containerHeight / 2; // Center Y coordinate
+
+    // Calculate positions and colors
+    final numCategories = categoryTotals.length;
+    final angleStep = 2 * pi / numCategories;
+    double angle = 0.0;
+
+    List<Positioned> circles = [];
+    for (var entry in categoryTotals.entries) {
+      double size = (entry.value / maxAmount) * 80 + 40;
+      Color color = colorPalette[entry.key.hashCode % colorPalette.length];
+
+      // Calculate circle position
+      double x = centerX + (radius * cos(angle)) - size / 2;
+      double y = centerY + (radius * sin(angle)) - size / 2;
+
+      // Ensure circles stay within container bounds
+      x = x.clamp(0, containerWidth - size);
+      y = y.clamp(0, containerHeight - size);
+
+      // Add circle to the list
+      circles.add(Positioned(
+        left: x,
+        top: y,
+        width: size,
+        height: size,
+        child: Container(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: color.withOpacity(0.7),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                spreadRadius: 1,
+                blurRadius: 3,
+                offset: Offset(0, 2),
+              ),
+            ],
+          ),
+          alignment: Alignment.center,
+          child: Text(
+            entry.key,
+            textAlign: TextAlign.center,
+            style: AppTextStyles.kTransactionSubtitleTextStyle,
+          ),
+        ),
+      ));
+
+      angle += angleStep; // Increment angle
+    }
 
     return Container(
-      height: 310,
+      height: containerHeight,
+      width: containerWidth,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
@@ -75,84 +130,38 @@ class InfoWidget extends StatelessWidget {
             ),
             SizedBox(height: 10),
             Expanded(
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  final double containerWidth = constraints.maxWidth;
-                  final double containerHeight = constraints.maxHeight;
-                  List<Positioned> circles = [];
-
-                  // Calculate the center of the container
-                  final centerX = containerWidth / 2;
-                  final centerY = containerHeight / 2;
-
-                  for (var entry in categoryTotals.entries) {
-                    double size = (entry.value / maxAmount) * 80 +
-                        40; // Original size calculation
-                    Color color =
-                        lightColors[random.nextInt(lightColors.length)];
-
-                    // Generate position closer to the center
-                    bool positionIsValid = false;
-                    Offset position;
-
-                    do {
-                      // Generate position within 40% of the container size around the center
-                      double x = centerX +
-                          (random.nextDouble() - 0.5) * containerWidth * 0.4;
-                      double y = centerY +
-                          (random.nextDouble() - 0.5) * containerHeight * 0.4;
-
-                      // Ensure the circle doesn't exceed the container bounds
-                      x = x.clamp(size / 2, containerWidth - size / 2);
-                      y = y.clamp(size / 2, containerHeight - size / 2);
-
-                      position = Offset(x - size / 2, y - size / 2);
-
-                      // Check for overlap
-                      positionIsValid = circles.every((circle) {
-                        double dx = (circle.left! + circle.width! / 2) -
-                            (position.dx + size / 2);
-                        double dy = (circle.top! + circle.height! / 2) -
-                            (position.dy + size / 2);
-                        double distance = sqrt(dx * dx + dy * dy);
-                        return distance >=
-                            (size / 2 +
-                                (circle.width! / 2) +
-                                2); // Further reduced minimum distance
-                      });
-                    } while (!positionIsValid);
-
-                    // Add circle to the list
-                    circles.add(Positioned(
-                      left: position.dx,
-                      top: position.dy,
-                      width: size,
-                      height: size,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: color.withOpacity(0.7),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              spreadRadius: 1,
-                              blurRadius: 3,
-                              offset: Offset(0, 2),
+              child: Stack(
+                children: circles.isEmpty
+                    ? [
+                        Positioned(
+                          left: centerX - 40, // Center the single circle
+                          top: centerY - 40,
+                          width: 80,
+                          height: 80,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: colorPalette[0].withOpacity(0.7),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  spreadRadius: 1,
+                                  blurRadius: 3,
+                                  offset: Offset(0, 2),
+                                ),
+                              ],
                             ),
-                          ],
+                            alignment: Alignment.center,
+                            child: Text(
+                              "No Data",
+                              textAlign: TextAlign.center,
+                              style:
+                                  AppTextStyles.kTransactionSubtitleTextStyle,
+                            ),
+                          ),
                         ),
-                        alignment: Alignment.center,
-                        child: Text(
-                          entry.key,
-                          textAlign: TextAlign.center,
-                          style: AppTextStyles.kTransactionSubtitleTextStyle,
-                        ),
-                      ),
-                    ));
-                  }
-
-                  return Stack(children: circles);
-                },
+                      ]
+                    : circles,
               ),
             ),
           ],

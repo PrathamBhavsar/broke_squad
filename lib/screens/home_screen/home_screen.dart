@@ -18,29 +18,23 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String _selectedGroup = 'All'; // Manage selected group state
-  late final UserProvider userProvider;
-  late List<TransactionModel> transactions;
+  late Future<List<TransactionModel>> _transactionsFuture;
+
   @override
   void initState() {
     super.initState();
-    userProvider = Provider.of<UserProvider>(context, listen: false);
-    transactions = userProvider.transactions;
-  }
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
 
-  @override
-  void didChangeDependencies() async {
-    await userProvider.fetchTransactions();
-    transactions = userProvider.transactions;
-    super.didChangeDependencies();
+    // Initialize the future to fetch transactions
+    _transactionsFuture =
+        userProvider.fetchTransactions().then((_) => userProvider.transactions);
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         shape: CircleBorder(),
-
         child: Icon(
           Icons.add,
           color: AppColors.white,
@@ -49,7 +43,11 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: AppColors.kDarkColor,
         onPressed: () {
           logEvent(str: 'Pressed');
-          Navigator.push(context, MaterialPageRoute(builder: (context) => CreateBillScreen(),));
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => CreateBillScreen(),
+              ));
         },
       ),
       appBar: AppBar(
@@ -58,34 +56,55 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Padding(
         padding: AppPaddings.scaffoldPadding,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            InfoWidget(
-                selectedGroup: _selectedGroup,
-                transactions:
-                    transactions), // Pass transactions and selected group
-            SizedBox(height: 10),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Transactions',
-                style: AppTextStyles.kPhoneInputTextFieldTextStyle,
-              ),
-            ),
-            SizedBox(height: 10),
-            Expanded(
-              child: TransactionFilterWidget(
-                transactions: transactions,
-                selectedGroup: _selectedGroup,
-                onGroupSelected: (group) {
-                  setState(() {
-                    _selectedGroup = group; // Update selected group
-                  });
-                },
-              ),
-            ),
-          ],
+        child: FutureBuilder<List<TransactionModel>>(
+          future: _transactionsFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: CircularProgressIndicator(), // Show loading indicator
+              );
+            } else if (snapshot.hasError) {
+              return Center(
+                child: Text('Error fetching transactions'),
+              );
+            } else if (snapshot.hasData) {
+              final transactions = snapshot.data!;
+
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  InfoWidget(
+                      selectedGroup: _selectedGroup,
+                      transactions:
+                          transactions), // Pass transactions and selected group
+                  SizedBox(height: 10),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Transactions',
+                      style: AppTextStyles.kPhoneInputTextFieldTextStyle,
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  Expanded(
+                    child: TransactionFilterWidget(
+                      transactions: transactions,
+                      selectedGroup: _selectedGroup,
+                      onGroupSelected: (group) {
+                        setState(() {
+                          _selectedGroup = group; // Update selected group
+                        });
+                      },
+                    ),
+                  ),
+                ],
+              );
+            } else {
+              return Center(
+                child: Text('No transactions available'),
+              );
+            }
+          },
         ),
       ),
     );
