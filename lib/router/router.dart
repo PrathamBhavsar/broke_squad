@@ -1,7 +1,6 @@
 import 'package:contri_buter/screens/add_costs/add_costs_screen.dart';
 import 'package:contri_buter/screens/auth/login_screen.dart';
 import 'package:contri_buter/screens/create_bill_screen/create_bill_screen.dart';
-import 'package:contri_buter/screens/home_screen/create_bill_screen.dart';
 import 'package:contri_buter/screens/home_screen/home_screen.dart';
 import 'package:contri_buter/screens/home_screen/profile_screen.dart';
 import 'package:contri_buter/screens/info/info_screen.dart';

@@ -18,7 +18,7 @@ class UserProvider extends ChangeNotifier {
       _transactions = snapshot.docs
           .map((doc) => TransactionModel.fromFirestore(doc))
           .toList();
-      print(_transactions.join('\n'));
+      print("Fetched: ${_transactions.join('\n')}");
 
       notifyListeners();
     } catch (error) {
