@@ -5,11 +5,11 @@ import 'package:contri_buter/screens/create_bill_screen/widgets/bill_name_text_f
 import 'package:contri_buter/screens/create_bill_screen/widgets/contact_avatar.dart';
 import 'package:contri_buter/screens/create_bill_screen/widgets/continue_button.dart';
 import 'package:contri_buter/utils.dart';
-import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
 class CreateBillScreen extends StatefulWidget {
@@ -59,7 +59,14 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
           ),
           body: Padding(
             padding: AppPaddings.scaffoldPadding,
-            child: views[splitProvider.currentIndex],
+            child: SingleChildScrollView(
+                child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                        maxHeight: getHeight(context) -
+                            kBottomNavigationBarHeight -
+                            kToolbarHeight -
+                            24 * 3), // 24 * 3 to adjust paddings
+                    child: IntrinsicHeight(child: views[splitProvider.currentIndex]))),
           ),
           bottomNavigationBar: ContinueButton(
             onPressed: () {
@@ -152,39 +159,28 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
   _buildBillData(SplitProvider provider) {
     return Column(
       children: [
-        DottedBorder(
-          borderType: BorderType.Circle,
-          stackFit: StackFit.loose,
-          color: Colors.grey.shade400,
-          strokeWidth: 2,
-          child: Container(
-            width: getWidth(context) * 0.7,
-            height: getWidth(context) * 0.7,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-
-            ),
-            child: Center(
-              child: Wrap(
-                crossAxisAlignment: WrapCrossAlignment.center,
-                alignment: WrapAlignment.center,
-                children: [
-                  for (int i = 0;
-                      i <
-                          (provider.selectedContacts.length < 5
-                              ? provider.selectedContacts.length
-                              : 5);
-                      i++)
-                    SizedBox.fromSize(
-                        size: Size.fromRadius(getWidth(context) * 0.8 / 8),
-                        child: ContactCircleAvatar(
-                          contact: provider.selectedContacts[i],
-                        )),
-                ],
-              ),
-            ),
-          ),
+        spaceH10(),
+        Stack(
+          children: [
+            AvatarIndicator(context: context, selectedContacts: provider.selectedContacts),
+            Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: Align(
+                  alignment: Alignment.bottomRight,
+                  child: FloatingActionButton(
+                    onPressed: () => provider.manageBack(context),
+                    shape: CircleBorder(),
+                    elevation: 0,
+                    child: FaIcon(
+                      FontAwesomeIcons.plus,
+                      color: Colors.white,
+                    ),
+                    backgroundColor: AppColors.kPrimaryColor,
+                  )),
+            )
+          ],
         ),
+        spaceH20(),
         Align(
           alignment: Alignment.centerLeft,
           child: Text(

@@ -29,7 +29,10 @@ class AvatarIndicator extends StatelessWidget {
         width: getWidth(context),
         decoration: BoxDecoration(borderRadius: BorderRadius.circular(24.r)),
         child: _selectedContacts.isEmpty
-            ? Text('Select Contacts')
+            ? Padding(
+              padding: const EdgeInsets.all(2.0),
+              child: Text('Select Contacts',style: AppTextStyles.poppins.copyWith(color: AppColors.grey,fontWeight: FontWeight.bold),),
+            )
             : Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
