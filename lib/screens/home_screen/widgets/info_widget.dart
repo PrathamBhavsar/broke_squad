@@ -34,7 +34,7 @@ class InfoWidget extends StatelessWidget {
     // Calculate total amount per category
     Map<String, double> categoryTotals = {};
     for (var transaction in transactions) {
-      if (selectedGroup == 'All' || transaction.groupName == selectedGroup) {
+      if (selectedGroup == 'All' || transaction.title == selectedGroup) {
         categoryTotals.update(
           transaction.category,
           (existingValue) => existingValue + transaction.amount,

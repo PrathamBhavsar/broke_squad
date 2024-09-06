@@ -1,9 +1,10 @@
 import 'package:contri_buter/models/contacts.dart';
+import 'package:contri_buter/models/transaction.dart';
 import 'package:contri_buter/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:contri_buter/models/transaction.dart' as tr;
+
 
 class SplitProvider extends ChangeNotifier {
   List<MyContact> allContacts = [];
@@ -18,7 +19,7 @@ class SplitProvider extends ChangeNotifier {
 
   SplitProvider._privateConstructor();
   static final SplitProvider instance = SplitProvider._privateConstructor();
-  getContact() async {
+  Future<void> getContact() async {
     List<MyContact> myContacts = [];
     bool check = await FlutterContacts.requestPermission();
 
@@ -88,9 +89,7 @@ class SplitProvider extends ChangeNotifier {
           : currentIndex++;
     } else if (currentIndex == 1) {
       setParams != null ? setParams() : null;
-      logEvent(
-          str:
-              'Saved $billName $billAmount $billCategory ${int.parse(billAmount) / selectedContacts.length}');
+      _save();
       Fluttertoast.showToast(msg: 'Transaction Created!');
       Navigator.pop(context);
     } else {
@@ -105,7 +104,8 @@ class SplitProvider extends ChangeNotifier {
   }
 
   _save() async {
-    tr.Transaction transaction = tr.Transaction(groupName: billName,amount: double.parse(billAmount),category: billCategory,contributors: selectedContacts,unpaidParticipants: selectedContacts,dateTime: DateTime.now());
+    TransactionModel transactionModel = TransactionModel(id: '-1',title: billName,amount: double.parse(billAmount),category: billCategory,contributors: TransactionModel.peopleFromList(selectedContacts, double.parse(billAmount)/(selectedContacts.length+1)),unpaidParticipants: TransactionModel.peopleFromList(selectedContacts, double.parse(billAmount)/(selectedContacts.length+1)),dateTime: DateTime.now());
+    logEvent(str: "${transactionModel.toString()}");
     // call firebase to save transaction
   }
   onDispose() {

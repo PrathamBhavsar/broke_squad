@@ -7,6 +7,7 @@ import 'package:contri_buter/screens/create_bill_screen/widgets/continue_button.
 import 'package:contri_buter/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -29,11 +30,14 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
 
   @override
   void initState() {
-    _searchController.addListener(() {
-      SplitProvider.instance.filterContact(_searchController.text);
-    },);
+    _searchController.addListener(
+      () {
+        SplitProvider.instance.filterContact(_searchController.text);
+      },
+    );
     super.initState();
   }
+
   @override
   void didChangeDependencies() async {
     await Future.delayed(Duration(milliseconds: 200));
@@ -128,37 +132,48 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
         spaceH10(),
         AvatarIndicator(context: context, selectedContacts: splitProvider.selectedContacts),
         spaceH20(),
-        Flexible(
-          child: SizedBox(
-            height: getHeight(context),
-            child: splitProvider.displayContacts.isEmpty ? Text('Nothing to Show',style: AppTextStyles.poppins.copyWith(color: AppColors.grey,fontWeight: FontWeight.w500),) : ListView.builder(
-              itemBuilder: (context, index) {
-                return ListTile(
-                  leading: ContactCircleAvatar(contact: splitProvider.displayContacts[index]),
-                  title: Text(
-                    splitProvider.displayContacts[index].name,
-                    style: AppTextStyles.kCreateBillAppBarTitleTextStyle.copyWith(fontSize: 13.sp),
+        splitProvider.displayContacts.isEmpty
+            ? ElevatedButton(
+                onPressed: () async => await FlutterContacts.openExternalInsert().whenComplete(() async => await splitProvider.getContact(),),
+                child: Text(
+                  'Add Contact',
+                  style: AppTextStyles.poppins
+                      .copyWith(color: AppColors.grey, fontWeight: FontWeight.w500),
+                ))
+            : Flexible(
+                child: SizedBox(
+                  height: getHeight(context),
+                  child: ListView.builder(
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        leading: ContactCircleAvatar(contact: splitProvider.displayContacts[index]),
+                        title: Text(
+                          splitProvider.displayContacts[index].name,
+                          style: AppTextStyles.kCreateBillAppBarTitleTextStyle
+                              .copyWith(fontSize: 13.sp),
+                        ),
+                        subtitle: Text(splitProvider.displayContacts[index].phNo,
+                            style: AppTextStyles.kCreateBillAppBarTitleTextStyle
+                                .copyWith(fontSize: 12.sp, fontWeight: FontWeight.w500)),
+                        trailing: Checkbox(
+                          value: splitProvider.selectedContacts.isNotEmpty
+                              ? splitProvider.selectedContacts
+                                  .contains(splitProvider.displayContacts[index])
+                              : false,
+                          onChanged: (value) => setState(() => value != null
+                              ? (!value
+                                  ? splitProvider
+                                      .removeContact(splitProvider.displayContacts[index])
+                                  : splitProvider.addContact(splitProvider.displayContacts[index]))
+                              : null),
+                          shape: CircleBorder(),
+                        ),
+                      );
+                    },
+                    itemCount: splitProvider.displayContacts.length,
                   ),
-                  subtitle: Text(splitProvider.displayContacts[index].phNo,
-                      style: AppTextStyles.kCreateBillAppBarTitleTextStyle
-                          .copyWith(fontSize: 12.sp, fontWeight: FontWeight.w500)),
-                  trailing: Checkbox(
-                    value: splitProvider.selectedContacts.isNotEmpty
-                        ? splitProvider.selectedContacts.contains(splitProvider.displayContacts[index])
-                        : false,
-                    onChanged: (value) => setState(() => value != null
-                        ? (!value
-                            ? splitProvider.removeContact(splitProvider.displayContacts[index])
-                            : splitProvider.addContact(splitProvider.displayContacts[index]))
-                        : null),
-                    shape: CircleBorder(),
-                  ),
-                );
-              },
-              itemCount: splitProvider.displayContacts.length,
-            ),
-          ),
-        ),
+                ),
+              ),
       ],
     );
   }

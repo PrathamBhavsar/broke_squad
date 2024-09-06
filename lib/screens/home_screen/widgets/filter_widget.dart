@@ -25,7 +25,7 @@ class _TransactionFilterWidgetState extends State<TransactionFilterWidget> {
     print('Transactions: ${widget.transactions}');
 
     final Set<String> groupNames =
-        widget.transactions.map((transaction) => transaction.groupName).toSet();
+        widget.transactions.map((transaction) => transaction.title).toSet();
     print('Group Names: $groupNames');
 
     return Column(
@@ -93,7 +93,7 @@ class _TransactionFilterWidgetState extends State<TransactionFilterWidget> {
             itemBuilder: (context, index) {
               final transaction = widget.transactions[index];
               if (widget.selectedGroup == 'All' ||
-                  transaction.groupName == widget.selectedGroup) {
+                  transaction.title == widget.selectedGroup) {
                 return Column(
                   children: [
                     Container(
