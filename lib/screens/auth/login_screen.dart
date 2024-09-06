@@ -175,15 +175,15 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
           style: ButtonStyle(
-            padding: MaterialStateProperty.all(
+            padding: WidgetStateProperty.all(
               EdgeInsets.symmetric(vertical: 15),
             ),
-            backgroundColor: MaterialStateProperty.all(
+            backgroundColor: WidgetStateProperty.all(
               authProvider.isLoading
                   ? Colors.grey
                   : AppColors.kPrimaryColor, // Change button color when loading
             ),
-            shape: MaterialStateProperty.all(
+            shape: WidgetStateProperty.all(
               RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12.r),
               ),

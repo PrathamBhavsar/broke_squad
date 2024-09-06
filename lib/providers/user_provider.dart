@@ -11,13 +11,14 @@ class UserProvider extends ChangeNotifier {
 
   List<TransactionModel> get transactions => _transactions;
 
+  static final UserProvider instance = UserProvider._privateConstructor();
+  UserProvider._privateConstructor();
+
   Future<void> fetchTransactions() async {
     try {
       final snapshot = await _firestore.collection('transactions').get();
 
-      _transactions = snapshot.docs
-          .map((doc) => TransactionModel.fromFirestore(doc))
-          .toList();
+      _transactions = snapshot.docs.map((doc) => TransactionModel.fromFirestore(doc)).toList();
       print("Fetched: ${_transactions.join('\n')}");
 
       notifyListeners();
@@ -35,8 +36,7 @@ class UserProvider extends ChangeNotifier {
     }
 
     try {
-      DocumentSnapshot userDoc =
-          await _firestore.collection('users').doc(user.phoneNumber).get();
+      DocumentSnapshot userDoc = await _firestore.collection('users').doc(user.phoneNumber).get();
 
       if (userDoc.exists) {
         String? profileImageUrl = userDoc.get('profile_image');

@@ -25,6 +25,7 @@ class _SplashScreenState extends State<SplashScreen> {
       context.goNamed('onboarding');
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
