@@ -15,8 +15,7 @@ class AppColors {
 }
 
 class AppPaddings {
-  static EdgeInsetsGeometry scaffoldPadding =
-      EdgeInsets.fromLTRB(12, 12, 12, 12);
+  static EdgeInsetsGeometry scaffoldPadding = EdgeInsets.fromLTRB(12, 12, 12, 12);
 
   static EdgeInsetsGeometry getBottomPadding(context) =>
       EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom);
@@ -38,7 +37,7 @@ class AppTextStyles {
     fontWeight: FontWeight.w600,
   );
 
-  static TextStyle kTransactionTitleTextStyle =poppins.copyWith(
+  static TextStyle kTransactionTitleTextStyle = poppins.copyWith(
     color: AppColors.kDarkColor,
     fontSize: 16.0.sp,
     fontWeight: FontWeight.w600,
@@ -55,11 +54,11 @@ class AppTextStyles {
     fontSize: 18.sp,
   );
   static TextStyle kCreateBillAppBarTitleTextStyle = poppins.copyWith(
-    color: AppColors.kDarkColor,fontWeight: FontWeight.bold,letterSpacing: 1.2,fontSize: 16.sp,
+    color: AppColors.kDarkColor,
+    fontWeight: FontWeight.bold,
+    letterSpacing: 1.2,
+    fontSize: 16.sp,
   );
-  static TextStyle kCreateBillTextFieldTextStyle = poppins.copyWith(
-      color: AppColors.grey,
-      fontWeight: FontWeight.w600,
-      fontSize: 13.sp
-  );
+  static TextStyle kCreateBillTextFieldTextStyle =
+      poppins.copyWith(color: AppColors.grey, fontWeight: FontWeight.w600, fontSize: 13.sp);
 }

@@ -60,6 +60,8 @@ dependencies:
   phone_number: ^2.1.0
   purchases_flutter: ^8.1.0
   purchases_ui_flutter: ^8.1.0
+  animated_emoji: ^3.1.0
+  lottie: ^3.1.2
 
 dev_dependencies:
   flutter_test:
