@@ -16,7 +16,12 @@ class ProfileScreen extends StatelessWidget {
         ),
       ),
       body: Center(
-        child: Text('Profile Screen'),
+        child: Column(
+          children: [
+            Text('Profile Screen'),
+            TextButton(onPressed: (){}, child: Text('Get Pro'))
+          ],
+        ),
       ),
     );
   }

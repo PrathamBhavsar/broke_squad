@@ -58,6 +58,7 @@ dependencies:
   dotted_border: ^2.1.0
   flutter_contacts: ^1.1.9+2
   phone_number: ^2.1.0
+  purchases_flutter: ^8.1.0
 
 dev_dependencies:
   flutter_test:

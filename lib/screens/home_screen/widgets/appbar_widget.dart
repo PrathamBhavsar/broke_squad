@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:contri_buter/providers/user_provider.dart';
+import 'package:contri_buter/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
@@ -20,6 +21,7 @@ class _AppbarWidgetState extends State<AppbarWidget> {
         FutureBuilder<String?>(
           future: UserProvider.instance.getProfileImage(),
           builder: (context, snapshot) {
+            logEvent(str: snapshot.data.toString());
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Shimmer.fromColors(
                 baseColor: Colors.grey[300]!,

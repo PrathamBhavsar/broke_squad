@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:contri_buter/contollers/firebase_controller.dart';
 import 'package:contri_buter/models/transaction.dart';
+import 'package:contri_buter/models/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -7,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class UserProvider extends ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  UserModel? user;
   List<TransactionModel> _transactions = [];
 
   List<TransactionModel> get transactions => _transactions;
@@ -14,6 +17,9 @@ class UserProvider extends ChangeNotifier {
   static final UserProvider instance = UserProvider._privateConstructor();
   UserProvider._privateConstructor();
 
+  Future<void> getUser() async {
+    user = await FirebaseController.instance.getUser(FirebaseAuth.instance.currentUser!.phoneNumber.toString());
+}
   Future<void> fetchTransactions() async {
     try {
       final snapshot = await _firestore.collection('transactions').get();
@@ -58,6 +64,7 @@ class UserProvider extends ChangeNotifier {
 
   Future<String?> getProfileImage() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('profile_image');
+
+    return prefs.getString('profile_image') ?? user?.profileImage;
   }
 }
