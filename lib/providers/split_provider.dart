@@ -1,48 +1,96 @@
 import 'package:contri_buter/models/contacts.dart';
 import 'package:contri_buter/utils.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:contri_buter/models/transaction.dart' as tr;
 
 class SplitProvider extends ChangeNotifier {
-  List<Contact> allContacts = [];
-  List<Contact> selectedContacts = [];
+  List<MyContact> allContacts = [];
+  List<MyContact> displayContacts = [];
+  List<MyContact> selectedContacts = [];
   String billName = '';
   String billAmount = '';
   String billCategory = '';
   int currentIndex = 0;
-  List<String> abbBarTitles = ['Add People','Create Bill'];
+  List<String> abbBarTitles = ['Add People', 'Create Bill'];
   // TODO: later update it with transaction.dart
 
   SplitProvider._privateConstructor();
   static final SplitProvider instance = SplitProvider._privateConstructor();
-  getContact() {
-    allContacts =  [
-      Contact(name: "Alice Johnson", phNo: "+91 1234567890"),
-      Contact(name: "Bob Smith", phNo: "+91 9876543210"),
-      Contact(name: "Charlie Brown", phNo: "+91 7890123456"),
-      Contact(name: "David Lee", phNo: "+91 6789012345"),
-      Contact(name: "Emily Taylor", phNo: "+91 5678901234"),
-      Contact(name: "Frank Wilson", phNo: "+91 4567890123"),
-      Contact(name: "Grace Williams", phNo: "+91 3456789012"),
-      Contact(name: "Henry Baker", phNo: "+91 2345678901"),
-      Contact(name: "Isabella Clark", phNo: "+91 1234567890"),
-      Contact(name: "Jack Brown", phNo: "+91 9876543210"),
-    ];
+  getContact() async {
+    List<MyContact> myContacts = [];
+    bool check = await FlutterContacts.requestPermission();
+
+    if (check) {
+      final contacts = await FlutterContacts.getContacts(withProperties: true);
+      contacts.isEmpty
+          ? logEvent(str: 'Empty')
+          : {
+              for (int i = 0; i < contacts.length; i++)
+                {
+                  for (int j = 0; j < contacts[i].phones.length; j++)
+                    {
+                      myContacts.add(MyContact(
+                          name: contacts[i].displayName,
+                          phNo: contacts[i].phones[j].normalizedNumber))
+                    }
+                }
+            };
+    } else {
+      logError(str: 'Not Allowed');
+    }
+    allContacts = myContacts;
+    displayContacts = myContacts;
     notifyListeners();
   }
 
-  addContact(Contact contact) {selectedContacts.add(contact); notifyListeners();}
-  removeContact(Contact contact) {selectedContacts.remove(contact);}
-  setBillName(String str) {billName = str; }
-  setBillAmount(String str) {billAmount = str; }
-  setBillCategory(String str) {billCategory = str; notifyListeners();}
+  filterContact(String str) {
+    logEvent(str: 'mystr : $str');
+    if (str.isEmpty) {
+      displayContacts = allContacts;
+    } else {
+      displayContacts = allContacts
+          .where(
+            (element) => element.name.toLowerCase().contains(str.toLowerCase()) || element.phNo.contains(str),
+          )
+          .toList();
+    }
+    notifyListeners();
+  }
+
+  addContact(MyContact contact) {
+    selectedContacts.add(contact);
+    notifyListeners();
+  }
+
+  removeContact(MyContact contact) {
+    selectedContacts.remove(contact);
+  }
+
+  setBillName(String str) {
+    billName = str;
+  }
+
+  setBillAmount(String str) {
+    billAmount = str;
+  }
+
+  setBillCategory(String str) {
+    billCategory = str;
+    notifyListeners();
+  }
 
   manageContinue(context, [Function? setParams]) {
     if (currentIndex == 0) {
-      selectedContacts.isEmpty ? Fluttertoast.showToast(msg: 'Add People to Continue') : currentIndex++;
-    } else if(currentIndex == 1) {
+      selectedContacts.isEmpty
+          ? Fluttertoast.showToast(msg: 'Add People to Continue')
+          : currentIndex++;
+    } else if (currentIndex == 1) {
       setParams != null ? setParams() : null;
-      logEvent(str: 'Saved $billName $billAmount $billCategory ${ int.parse(billAmount)/selectedContacts.length}');
+      logEvent(
+          str:
+              'Saved $billName $billAmount $billCategory ${int.parse(billAmount) / selectedContacts.length}');
       Fluttertoast.showToast(msg: 'Transaction Created!');
       Navigator.pop(context);
     } else {
@@ -56,13 +104,16 @@ class SplitProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  _save() async {
+    tr.Transaction transaction = tr.Transaction(groupName: billName,amount: double.parse(billAmount),category: billCategory,contributors: selectedContacts,unpaidParticipants: selectedContacts,dateTime: DateTime.now());
+    // call firebase to save transaction
+  }
   onDispose() {
-    allContacts.clear();
+    displayContacts.clear();
     selectedContacts.clear();
     currentIndex = 0;
     billName = '';
-    billAmount= '';
+    billAmount = '';
     billCategory = '';
-
   }
 }

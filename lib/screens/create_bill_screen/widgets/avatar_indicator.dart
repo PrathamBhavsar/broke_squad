@@ -11,11 +11,11 @@ class AvatarIndicator extends StatelessWidget {
   const AvatarIndicator({
     super.key,
     required this.context,
-    required List<Contact> selectedContacts,
+    required List<MyContact> selectedContacts,
   }) : _selectedContacts = selectedContacts;
 
   final BuildContext context;
-  final List<Contact> _selectedContacts;
+  final List<MyContact> _selectedContacts;
 
   @override
   Widget build(BuildContext context) {
