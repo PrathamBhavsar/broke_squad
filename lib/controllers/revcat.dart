@@ -1,4 +1,4 @@
-import 'package:contri_buter/contollers/firebase_controller.dart';
+import 'package:contri_buter/controllers/firebase_controller.dart';
 import 'package:contri_buter/models/subscription.dart';
 import 'package:contri_buter/utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';

@@ -1,4 +1,4 @@
-import 'package:contri_buter/contollers/firebase_controller.dart';
+import 'package:contri_buter/controllers/firebase_controller.dart';
 import 'package:contri_buter/models/contacts.dart';
 import 'package:contri_buter/models/transaction.dart';
 import 'package:contri_buter/utils.dart';
@@ -16,7 +16,6 @@ class SplitProvider extends ChangeNotifier {
   String billCategory = '';
   int currentIndex = 0;
   List<String> abbBarTitles = ['Add People', 'Create Bill'];
-  // TODO: later update it with transaction.dart
 
   SplitProvider._privateConstructor();
   static final SplitProvider instance = SplitProvider._privateConstructor();

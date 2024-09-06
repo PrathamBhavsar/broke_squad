@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:contri_buter/contollers/firebase_controller.dart';
+import 'package:contri_buter/controllers/firebase_controller.dart';
 import 'package:contri_buter/models/transaction.dart';
 import 'package:contri_buter/models/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
