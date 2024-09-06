@@ -1,10 +1,11 @@
+import 'package:contri_buter/controllers/firebase_controller.dart';
 import 'package:contri_buter/models/contacts.dart';
 import 'package:contri_buter/models/transaction.dart';
 import 'package:contri_buter/utils.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-
 
 class SplitProvider extends ChangeNotifier {
   List<MyContact> allContacts = [];
@@ -15,7 +16,6 @@ class SplitProvider extends ChangeNotifier {
   String billCategory = '';
   int currentIndex = 0;
   List<String> abbBarTitles = ['Add People', 'Create Bill'];
-  // TODO: later update it with transaction.dart
 
   SplitProvider._privateConstructor();
   static final SplitProvider instance = SplitProvider._privateConstructor();
@@ -53,7 +53,9 @@ class SplitProvider extends ChangeNotifier {
     } else {
       displayContacts = allContacts
           .where(
-            (element) => element.name.toLowerCase().contains(str.toLowerCase()) || element.phNo.contains(str),
+            (element) =>
+                element.name.toLowerCase().contains(str.toLowerCase()) ||
+                element.phNo.contains(str),
           )
           .toList();
     }
@@ -104,10 +106,21 @@ class SplitProvider extends ChangeNotifier {
   }
 
   _save() async {
-    TransactionModel transactionModel = TransactionModel(id: '-1',title: billName,amount: double.parse(billAmount),category: billCategory,contributors: TransactionModel.peopleFromList(selectedContacts, double.parse(billAmount)/(selectedContacts.length+1)),unpaidParticipants: TransactionModel.peopleFromList(selectedContacts, double.parse(billAmount)/(selectedContacts.length+1)),dateTime: DateTime.now());
-    logEvent(str: "${transactionModel.toString()}");
-    // call firebase to save transaction
+    TransactionModel transactionModel = TransactionModel(
+        id: '-1',
+        createdBy: FirebaseAuth.instance.currentUser!.phoneNumber.toString(),
+        title: billName,
+        amount: double.parse(billAmount),
+        category: billCategory,
+        contributors: TransactionModel.peopleFromList(
+            selectedContacts, double.parse(billAmount) / (selectedContacts.length + 1)),
+        unpaidParticipants: TransactionModel.peopleFromList(
+            selectedContacts, double.parse(billAmount) / (selectedContacts.length + 1)),
+        dateTime: DateTime.now());
+    logEvent(str: "${transactionModel.toJson()}");
+    await FirebaseController.instance.saveTransaction(transactionModel);
   }
+
   onDispose() {
     displayContacts.clear();
     selectedContacts.clear();

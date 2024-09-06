@@ -35,8 +35,7 @@ class AuthProvider extends ChangeNotifier {
       await auth.verifyPhoneNumber(
         phoneNumber: fullPhoneNumber,
         verificationCompleted: (PhoneAuthCredential credential) async {
-          await _signInWithPhoneAuthCredential(credential, context, phoneNumber,
-              autoSignIn: true);
+          await _signInWithPhoneAuthCredential(credential, context, phoneNumber, autoSignIn: true);
         },
         verificationFailed: (FirebaseAuthException e) {
           print('Verification failed: ${e.message}');
@@ -62,8 +61,7 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> verifyOtp(
-      String otp, BuildContext context, int phoneNumber) async {
+  Future<void> verifyOtp(String otp, BuildContext context, int phoneNumber) async {
     toggleLoading();
 
     try {
@@ -73,8 +71,7 @@ class AuthProvider extends ChangeNotifier {
           smsCode: otp,
         );
 
-        await _signInWithPhoneAuthCredential(
-            phoneAuthCredential, context, phoneNumber,
+        await _signInWithPhoneAuthCredential(phoneAuthCredential, context, phoneNumber,
             autoSignIn: false);
       } else {
         print('Verification ID is null. Cannot verify OTP.');
@@ -85,8 +82,7 @@ class AuthProvider extends ChangeNotifier {
       if (e is FirebaseAuthException && e.code == 'invalid-verification-code') {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content:
-                Text('The OTP you entered is incorrect. Please try again.'),
+            content: Text('The OTP you entered is incorrect. Please try again.'),
           ),
         );
       }
@@ -115,12 +111,10 @@ class AuthProvider extends ChangeNotifier {
       toggleLoading();
     } catch (error) {
       print('Failed to sign in with PhoneAuthCredential: $error');
-      if (error is FirebaseAuthException &&
-          error.code == 'invalid-verification-code') {
+      if (error is FirebaseAuthException && error.code == 'invalid-verification-code') {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content:
-                Text('The OTP you entered is incorrect. Please try again.'),
+            content: Text('The OTP you entered is incorrect. Please try again.'),
           ),
         );
       }
@@ -139,10 +133,7 @@ class AuthProvider extends ChangeNotifier {
     );
 
     try {
-      await firestore
-          .collection('users')
-          .doc('+$phoneNumber')
-          .set(newUser.toJson());
+      await firestore.collection('users').doc('+$phoneNumber').set(newUser.toJson());
       print('User created with ID: ${user.uid}');
     } catch (error) {
       print('Failed to create user entry: $error');
