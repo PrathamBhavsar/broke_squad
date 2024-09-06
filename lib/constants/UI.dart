@@ -11,6 +11,7 @@ class AppColors {
   static Color kPrimaryColor = Color(0xFFE14150);
   static Color kDarkColor = Color(0xFF000000);
   static Color kAuthTextFieldColor = Color.fromRGBO(235, 240, 245, 1);
+  static Color grey = Color(0xFF9B9B9B);
 }
 
 class AppPaddings {
@@ -31,26 +32,34 @@ class AppTextStyles {
     fontWeight: FontWeight.w600,
   );
 
-  static TextStyle kOnboardingSubtitleTextStyle = GoogleFonts.poppins(
+  static TextStyle kOnboardingSubtitleTextStyle = poppins.copyWith(
     color: Colors.black38,
     fontSize: 16.0.sp,
     fontWeight: FontWeight.w600,
   );
 
-  static TextStyle kTransactionTitleTextStyle = GoogleFonts.poppins(
+  static TextStyle kTransactionTitleTextStyle =poppins.copyWith(
     color: AppColors.kDarkColor,
     fontSize: 16.0.sp,
     fontWeight: FontWeight.w600,
   );
-  static TextStyle kTransactionSubtitleTextStyle = GoogleFonts.poppins(
+  static TextStyle kTransactionSubtitleTextStyle = poppins.copyWith(
     color: AppColors.kDarkColor,
     fontSize: 14.0.sp,
     fontWeight: FontWeight.w500,
   );
 
-  static TextStyle kPhoneInputTextFieldTextStyle = GoogleFonts.poppins(
+  static TextStyle kPhoneInputTextFieldTextStyle = poppins.copyWith(
     color: AppColors.kDarkColor,
     fontWeight: FontWeight.w600,
     fontSize: 18.sp,
+  );
+  static TextStyle kCreateBillAppBarTitleTextStyle = poppins.copyWith(
+    color: AppColors.kDarkColor,fontWeight: FontWeight.bold,letterSpacing: 1.2,fontSize: 16.sp,
+  );
+  static TextStyle kCreateBillTextFieldTextStyle = poppins.copyWith(
+      color: AppColors.grey,
+      fontWeight: FontWeight.w600,
+      fontSize: 13.sp
   );
 }

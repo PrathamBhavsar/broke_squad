@@ -17,11 +17,7 @@ class SaveButton extends StatelessWidget {
       builder: (context, infoProvider, child) {
         return GestureDetector(
           onTap: () {
-            infoProvider.editUserEntry(
-              nameController.text.trim(),
-context
-
-            );
+            infoProvider.editUserEntry(nameController.text.trim(), context);
           },
           child: Container(
             height: 70,
@@ -35,12 +31,12 @@ context
                 padding: const EdgeInsets.all(8.0),
                 child: infoProvider.isLoading
                     ? Text(
-                  'Save',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w800,
-                    color: Colors.white,
-                  ),
-                )
+                        'Save',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
+                        ),
+                      )
                     : CircularProgressIndicator(),
               ),
             ),

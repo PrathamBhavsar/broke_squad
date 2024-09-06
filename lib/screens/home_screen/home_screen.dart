@@ -1,15 +1,13 @@
-import 'package:contri_buter/providers/auth_provider.dart';
-import 'package:contri_buter/providers/user_provider.dart';
+import 'package:contri_buter/models/transaction.dart';
+import 'package:contri_buter/screens/create_bill_screen/create_bill_screen.dart';
 import 'package:contri_buter/screens/home_screen/widgets/appbar_widget.dart';
 import 'package:contri_buter/screens/home_screen/widgets/filter_widget.dart';
 import 'package:contri_buter/screens/home_screen/widgets/info_widget.dart';
+import 'package:contri_buter/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:contri_buter/constants/UI.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-
-import '../../models/demo_transactions.dart';
+import 'package:contri_buter/providers/user_provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -19,74 +17,96 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  FocusNode emailFocusNode = FocusNode();
-  FocusNode passwordFocusNode = FocusNode();
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
+  String _selectedGroup = 'All'; // Manage selected group state
+  late Future<List<TransactionModel>> _transactionsFuture;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final homeProvider = Provider.of<UserProvider>(context, listen: false);
-      User? user = FirebaseAuth.instance.currentUser;
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
 
-      if (user != null) {
-        homeProvider.fetchProfileImage(user);
-      }
-    });
+    // Initialize the future to fetch transactions
+    _transactionsFuture =
+        userProvider.fetchTransactions().then((_) => userProvider.transactions);
   }
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => UserProvider(),
-      builder: (context, child) {
-        return Scaffold(
-          floatingActionButton: SizedBox(
-            height: 65,
-            width: 65,
-            child: FloatingActionButton(
-                shape: CircleBorder(),
-                child: Icon(
-                  Icons.add,
-                  color: AppColors.white,
-                  size: 30,
-                ),
-                backgroundColor: AppColors.kDarkColor,
-                onPressed: () {
-                  context.goNamed('createBill');
-                }),
-          ),
-          appBar: AppBar(
-            automaticallyImplyLeading: false,
-            title: AppbarWidget(),
-          ),
-          body: Padding(
-            padding: AppPaddings.scaffoldPadding,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                InfoWidget(),
-                SizedBox(height: 10),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Transactions',
-                    style: AppTextStyles.kPhoneInputTextFieldTextStyle,
+    return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        shape: CircleBorder(),
+        child: Icon(
+          Icons.add,
+          color: AppColors.white,
+          size: 30,
+        ),
+        backgroundColor: AppColors.kDarkColor,
+        onPressed: () {
+          logEvent(str: 'Pressed');
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => CreateBillScreen(),
+              ));
+        },
+      ),
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: AppbarWidget(),
+      ),
+      body: Padding(
+        padding: AppPaddings.scaffoldPadding,
+        child: FutureBuilder<List<TransactionModel>>(
+          future: _transactionsFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: CircularProgressIndicator(), // Show loading indicator
+              );
+            } else if (snapshot.hasError) {
+              return Center(
+                child: Text('Error fetching transactions'),
+              );
+            } else if (snapshot.hasData) {
+              final transactions = snapshot.data!;
+
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  InfoWidget(
+                      selectedGroup: _selectedGroup,
+                      transactions:
+                          transactions), // Pass transactions and selected group
+                  SizedBox(height: 10),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Transactions',
+                      style: AppTextStyles.kPhoneInputTextFieldTextStyle,
+                    ),
                   ),
-                ),
-                SizedBox(height: 10),
-                Expanded(
-                  child: TransactionFilterWidget(
-                    transactions: demoTransactions,
+                  SizedBox(height: 10),
+                  Expanded(
+                    child: TransactionFilterWidget(
+                      transactions: transactions,
+                      selectedGroup: _selectedGroup,
+                      onGroupSelected: (group) {
+                        setState(() {
+                          _selectedGroup = group; // Update selected group
+                        });
+                      },
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
+                ],
+              );
+            } else {
+              return Center(
+                child: Text('No transactions available'),
+              );
+            }
+          },
+        ),
+      ),
     );
   }
 }

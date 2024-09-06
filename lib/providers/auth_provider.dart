@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:contri_buter/screens/auth/new_otp_screen.dart';
-import 'package:contri_buter/screens/auth/otp_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -66,7 +65,6 @@ class AuthProvider extends ChangeNotifier {
   Future<void> verifyOtp(
       String otp, BuildContext context, int phoneNumber) async {
     toggleLoading();
-    final auth = FirebaseAuth.instance;
 
     try {
       if (_verificationId != null) {
@@ -141,7 +139,10 @@ class AuthProvider extends ChangeNotifier {
     );
 
     try {
-      await firestore.collection('users').doc(user.uid).set(newUser.toJson());
+      await firestore
+          .collection('users')
+          .doc('+$phoneNumber')
+          .set(newUser.toJson());
       print('User created with ID: ${user.uid}');
     } catch (error) {
       print('Failed to create user entry: $error');

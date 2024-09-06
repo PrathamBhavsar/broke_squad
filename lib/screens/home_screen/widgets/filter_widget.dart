@@ -3,9 +3,16 @@ import 'package:contri_buter/models/transaction.dart';
 import 'package:flutter/material.dart';
 
 class TransactionFilterWidget extends StatefulWidget {
-  final List<Transaction> transactions;
+  final List<TransactionModel> transactions;
+  final String selectedGroup; // Accept the selected group as a parameter
+  final Function(String)
+      onGroupSelected; // Callback to notify when a group is selected
 
-  TransactionFilterWidget({required this.transactions});
+  TransactionFilterWidget({
+    required this.transactions,
+    required this.selectedGroup, // Pass the selected group
+    required this.onGroupSelected, // Pass the callback function
+  });
 
   @override
   _TransactionFilterWidgetState createState() =>
@@ -13,13 +20,13 @@ class TransactionFilterWidget extends StatefulWidget {
 }
 
 class _TransactionFilterWidgetState extends State<TransactionFilterWidget> {
-  String selectedGroup = 'All';
-
   @override
   Widget build(BuildContext context) {
-    final Set<String> groupNames = widget.transactions
-        .map((transaction) => transaction.groupName ?? 'Unknown Group')
-        .toSet();
+    print('Transactions: ${widget.transactions}');
+
+    final Set<String> groupNames =
+        widget.transactions.map((transaction) => transaction.title).toSet();
+    print('Group Names: $groupNames');
 
     return Column(
       children: [
@@ -48,11 +55,9 @@ class _TransactionFilterWidgetState extends State<TransactionFilterWidget> {
                       style: AppTextStyles.kTransactionSubtitleTextStyle,
                     ),
                   ),
-                  selected: selectedGroup == 'All',
+                  selected: widget.selectedGroup == 'All',
                   onSelected: (isSelected) {
-                    setState(() {
-                      selectedGroup = 'All';
-                    });
+                    widget.onGroupSelected('All'); // Notify parent widget
                   },
                 ),
                 ...groupNames.map((groupName) => FilterChip(
@@ -69,11 +74,10 @@ class _TransactionFilterWidgetState extends State<TransactionFilterWidget> {
                         child: Text(groupName,
                             style: AppTextStyles.kTransactionSubtitleTextStyle),
                       ),
-                      selected: selectedGroup == groupName,
+                      selected: widget.selectedGroup == groupName,
                       onSelected: (isSelected) {
-                        setState(() {
-                          selectedGroup = groupName;
-                        });
+                        widget
+                            .onGroupSelected(groupName); // Notify parent widget
                       },
                     )),
               ],
@@ -88,9 +92,8 @@ class _TransactionFilterWidgetState extends State<TransactionFilterWidget> {
             itemCount: widget.transactions.length,
             itemBuilder: (context, index) {
               final transaction = widget.transactions[index];
-              // Null-safe check for group name comparison
-              if (selectedGroup == 'All' ||
-                  transaction.groupName == selectedGroup) {
+              if (widget.selectedGroup == 'All' ||
+                  transaction.title == widget.selectedGroup) {
                 return Column(
                   children: [
                     Container(
@@ -100,9 +103,9 @@ class _TransactionFilterWidgetState extends State<TransactionFilterWidget> {
                           borderRadius: BorderRadiusDirectional.circular(20)),
                       child: ListTile(
                         title: Text(
-                          transaction.category ?? 'Unknown Category',
+                          transaction.title,
                           style: AppTextStyles.kTransactionTitleTextStyle,
-                        ), // Null-safe access
+                        ),
                         subtitle: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -111,11 +114,11 @@ class _TransactionFilterWidgetState extends State<TransactionFilterWidget> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                    '${transaction.contributors.join(", ")} paid for',
+                                    '${transaction.contributors.keys.join(", ")} paid for',
                                     style: AppTextStyles
                                         .kTransactionSubtitleTextStyle),
                                 Text(
-                                    '${transaction.unpaidParticipants.join(", ")}',
+                                    '${transaction.unpaidParticipants.keys.join(", ")}',
                                     style: AppTextStyles
                                         .kTransactionSubtitleTextStyle),
                                 Text('${transaction.dateTime.toLocal()}',

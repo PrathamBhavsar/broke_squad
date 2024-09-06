@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:logger/web.dart';
 
+spaceH10() => SizedBox(height: 10,);
+spaceH20() => SizedBox(height: 20,);
+
 getHeight(context) => MediaQuery.sizeOf(context).height;
 getWidth(context) => MediaQuery.sizeOf(context).width;
 

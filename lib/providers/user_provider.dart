@@ -1,11 +1,30 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:contri_buter/models/transaction.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserProvider extends ChangeNotifier {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  List<TransactionModel> _transactions = [];
+
+  List<TransactionModel> get transactions => _transactions;
+
+  Future<void> fetchTransactions() async {
+    try {
+      final snapshot = await _firestore.collection('transactions').get();
+
+      _transactions = snapshot.docs
+          .map((doc) => TransactionModel.fromFirestore(doc))
+          .toList();
+      print("Fetched: ${_transactions.join('\n')}");
+
+      notifyListeners();
+    } catch (error) {
+      print('Error fetching transactions: $error');
+    }
+  }
 
   Future<void> fetchProfileImage(User user) async {
     final prefs = await SharedPreferences.getInstance();
@@ -17,7 +36,7 @@ class UserProvider extends ChangeNotifier {
 
     try {
       DocumentSnapshot userDoc =
-      await _firestore.collection('users').doc(user.uid).get();
+          await _firestore.collection('users').doc(user.phoneNumber).get();
 
       if (userDoc.exists) {
         String? profileImageUrl = userDoc.get('profile_image');

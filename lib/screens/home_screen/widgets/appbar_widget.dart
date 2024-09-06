@@ -1,4 +1,3 @@
-import 'package:contri_buter/providers/auth_provider.dart';
 import 'package:contri_buter/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -19,14 +18,8 @@ class _AppbarWidgetState extends State<AppbarWidget> {
       create: (_) => UserProvider(),
       builder: (context, child) {
         return Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            IconButton(
-              icon: Icon(Icons.menu_rounded),
-              onPressed: () {
-                context.goNamed('menu');
-              },
-            ),
             Consumer<UserProvider>(
               builder: (context, homeProvider, child) {
                 return FutureBuilder<String?>(
