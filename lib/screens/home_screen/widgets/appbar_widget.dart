@@ -18,40 +18,42 @@ class _AppbarWidgetState extends State<AppbarWidget> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        FutureBuilder<String?>(
-          future: UserProvider.instance.getProfileImage(),
-          builder: (context, snapshot) {
-            logEvent(str: snapshot.data.toString());
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Shimmer.fromColors(
-                baseColor: Colors.grey[300]!,
-                highlightColor: Colors.grey[100]!,
-                child: ClipOval(
-                  child: Container(
-                    height: 40,
-                    width: 40,
-                    color: Colors.white,
-                  ),
-                ),
-              );
-            } else if (snapshot.hasError) {
-              return Icon(Icons.error);
-            } else if (snapshot.hasData) {
-              final profileImageUrl = snapshot.data;
-              return GestureDetector(
-                onTap: () {
-                  context.goNamed('profile');
-                },
-                child: profileImageUrl != null
-                    ? ClipOval(
-                    child: CachedNetworkImage(imageUrl: profileImageUrl,height: 50,width: 50,fit: BoxFit.cover,)
-                )
-                    : Icon(Icons.account_circle, size: 40),
-              );
-            } else {
-              return Icon(Icons.account_circle, size: 40);
-            }
+        InkWell(
+          onTap: () {
+            context.goNamed('profile');
           },
+          child: FutureBuilder<String?>(
+            future: UserProvider.instance.getProfileImage(),
+            builder: (context, snapshot) {
+              logEvent(str: snapshot.data.toString());
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Shimmer.fromColors(
+                  baseColor: Colors.grey[300]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: ClipOval(
+                    child: Container(
+                      height: 40,
+                      width: 40,
+                      color: Colors.white,
+                    ),
+                  ),
+                );
+              } else if (snapshot.hasError) {
+                return Icon(Icons.error);
+              } else if (snapshot.hasData) {
+                final profileImageUrl = snapshot.data;
+                return ClipOval(
+                    child: CachedNetworkImage(
+                  imageUrl: profileImageUrl ??
+                      "https://firebasestorage.googleapis.com/v0/b/fitmotive-9564c.appspot.com/o/user-icon-on-transparent-background-free-png.webp?alt=media&token=60700768-4bc0-4883-9c4d-104e23fad732",
+                  width: 50,
+                  fit: BoxFit.cover,
+                ));
+              } else {
+                return Icon(Icons.account_circle, size: 40);
+              }
+            },
+          ),
         ),
       ],
     );
