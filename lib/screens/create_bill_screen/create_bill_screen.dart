@@ -1,4 +1,5 @@
 import 'package:contri_buter/constants/UI.dart';
+import 'package:contri_buter/models/contacts.dart';
 import 'package:contri_buter/providers/split_provider.dart';
 import 'package:contri_buter/screens/create_bill_screen/widgets/avatar_indicator.dart';
 import 'package:contri_buter/screens/create_bill_screen/widgets/bill_name_text_field.dart';
@@ -27,6 +28,7 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
   final FocusNode _billNameFocusNode = FocusNode();
   final TextEditingController _amountController = TextEditingController();
   final FocusNode _amountFocusNode = FocusNode();
+  final Map<MyContact, TextEditingController> _contributionControllers = {};
 
   @override
   void initState() {
@@ -88,6 +90,12 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
             onPressed: () {
               if (splitProvider.currentIndex == 0) {
                 splitProvider.manageContinue(context);
+              } else if (splitProvider.currentIndex == 2) {
+                splitProvider.payers.forEach((payer) {
+                  String contribution =
+                      _contributionControllers[payer]?.text ?? '0';
+                  print('${payer.name} contributed $contribution');
+                });
               } else if (splitProvider.currentIndex == 1) {
                 splitProvider.manageContinue(context, () {
                   if (validateBillData()) {
@@ -283,13 +291,15 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
   _buildWhoPaid(SplitProvider splitProvider) {
     return Column(
       children: [
-        Align(
-          alignment: Alignment.topLeft,
-          child: Text(
-            'Who Paid?',
-            style: AppTextStyles.kCreateBillAppBarTitleTextStyle
-                .copyWith(fontSize: 14.sp),
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Text(
+              'Bill Amount: ${splitProvider.billAmount}',
+              style: AppTextStyles.kCreateBillAppBarTitleTextStyle
+                  .copyWith(fontSize: 14.sp),
+            ),
+          ],
         ),
         spaceH10(),
         Flexible(
@@ -298,34 +308,74 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
             child: ListView.builder(
               itemCount: splitProvider.selectedContacts.length,
               itemBuilder: (context, index) {
-                return ListTile(
-                  leading: ContactCircleAvatar(
-                      contact: splitProvider.selectedContacts[index]),
-                  title: Text(
-                    splitProvider.selectedContacts[index].name,
-                    style: AppTextStyles.kCreateBillAppBarTitleTextStyle
-                        .copyWith(fontSize: 13.sp),
-                  ),
-                  subtitle: Text(
-                    splitProvider.selectedContacts[index].phNo,
-                    style: AppTextStyles.kCreateBillAppBarTitleTextStyle
-                        .copyWith(fontSize: 12.sp, fontWeight: FontWeight.w500),
-                  ),
-                  trailing: Checkbox(
-                    value: splitProvider.payers
-                        .contains(splitProvider.selectedContacts[index]),
-                    onChanged: (value) {
+                final contact = splitProvider.selectedContacts[index];
+                final isSelected = splitProvider.payers.contains(contact);
+
+                // Initialize contribution controller if not already done
+                if (!_contributionControllers.containsKey(contact)) {
+                  _contributionControllers[contact] = TextEditingController();
+                }
+
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: ListTile(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadiusDirectional.circular(20)),
+                    leading: ContactCircleAvatar(contact: contact),
+                    title: Text(
+                      contact.name,
+                      style: AppTextStyles.kCreateBillAppBarTitleTextStyle
+                          .copyWith(fontSize: 13.sp),
+                    ),
+                    subtitle: Text(
+                      contact.phNo,
+                      style: AppTextStyles.kCreateBillAppBarTitleTextStyle
+                          .copyWith(
+                              fontSize: 12.sp, fontWeight: FontWeight.w500),
+                    ),
+                    trailing: isSelected
+                        ? SizedBox(
+                            width: 80.w,
+                            child: TextField(
+                              controller: _contributionControllers[contact],
+                              onChanged: (value) {
+                                splitProvider.updateContributions(
+                                    contact, value);
+                              },
+                              decoration: InputDecoration(
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                  borderSide: BorderSide(
+                                      color: Colors.grey), // Border color
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                  borderSide: BorderSide(
+                                      width: 2), // Border color when focused
+                                ),
+                                hintText: splitProvider.getHintText(contact),
+                                hintStyle: AppTextStyles
+                                    .kCreateBillAppBarTitleTextStyle
+                                    .copyWith(fontSize: 12.sp),
+                                contentPadding:
+                                    EdgeInsets.symmetric(vertical: 8.0),
+                              ),
+                              textAlign: TextAlign
+                                  .center, // Center the text and hintText
+                              keyboardType: TextInputType.number,
+                            ),
+                          )
+                        : null,
+                    tileColor: isSelected ? Colors.grey.shade300 : null,
+                    onTap: () {
                       setState(() {
-                        if (value == true) {
-                          splitProvider
-                              .addPayer(splitProvider.selectedContacts[index]);
+                        if (isSelected) {
+                          splitProvider.removePayer(contact);
                         } else {
-                          splitProvider.removePayer(
-                              splitProvider.selectedContacts[index]);
+                          splitProvider.addPayer(contact);
                         }
                       });
                     },
-                    shape: CircleBorder(),
                   ),
                 );
               },

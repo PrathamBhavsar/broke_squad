@@ -16,10 +16,13 @@ class SplitProvider extends ChangeNotifier {
   String billCategory = '';
   int currentIndex = 0;
   List<MyContact> payers = [];
+  Map<MyContact, TextEditingController> _contributionControllers = {};
   List<String> abbBarTitles = ['Add People', 'Create Bill', 'Who Paid'];
+  double amountPerPayer = 0;
 
   SplitProvider._privateConstructor();
   static final SplitProvider instance = SplitProvider._privateConstructor();
+
   Future<void> getContact() async {
     List<MyContact> myContacts = [];
     bool check = await FlutterContacts.requestPermission();
@@ -70,11 +73,14 @@ class SplitProvider extends ChangeNotifier {
 
   removeContact(MyContact contact) {
     selectedContacts.remove(contact);
+    notifyListeners();
   }
 
   void addPayer(MyContact contact) {
     if (!payers.contains(contact)) {
       payers.add(contact);
+      _contributionControllers[contact] = TextEditingController();
+      _distributeEqualAmounts();
       notifyListeners();
     }
   }
@@ -82,16 +88,56 @@ class SplitProvider extends ChangeNotifier {
   void removePayer(MyContact contact) {
     if (payers.contains(contact)) {
       payers.remove(contact);
+      _contributionControllers.remove(contact);
+      _distributeEqualAmounts();
       notifyListeners();
     }
   }
 
-  setBillName(String str) {
-    billName = str;
+  void _distributeEqualAmounts() {
+    if (payers.isEmpty || billAmount.isEmpty) return;
+    amountPerPayer = double.parse(billAmount) / payers.length;
+
+    for (var contact in payers) {
+      _contributionControllers[contact]?.text =
+          amountPerPayer.toStringAsFixed(2);
+    }
   }
 
   setBillAmount(String str) {
     billAmount = str;
+    _distributeEqualAmounts(); // Recalculate the distribution whenever the bill amount changes
+    notifyListeners();
+  }
+
+  void updateContributions(MyContact editedContact, String editedAmount) {
+    double totalBillAmount = double.parse(billAmount);
+    double editedAmountValue = double.tryParse(editedAmount) ?? 0.0;
+
+    double remainingAmount = totalBillAmount - editedAmountValue;
+    int remainingPayers = payers.length - 1;
+
+    if (remainingPayers > 0) {
+      amountPerPayer =
+          remainingAmount / remainingPayers; // Update the amountPerPayer
+      for (var contact in payers) {
+        if (contact != editedContact) {
+          _contributionControllers[contact]?.text =
+              amountPerPayer.toStringAsFixed(2);
+        }
+      }
+    }
+
+    notifyListeners();
+  }
+
+  String getHintText(MyContact contact) {
+    return amountPerPayer.toStringAsFixed(2);
+  }
+
+  setBillName(String str) {
+    billName = str;
+    notifyListeners();
   }
 
   setBillCategory(String str) {
@@ -113,6 +159,7 @@ class SplitProvider extends ChangeNotifier {
       if (billName.isEmpty || billAmount.isEmpty) {
         Fluttertoast.showToast(msg: 'Enter Bill Name and Amount to Continue');
       } else {
+        _distributeEqualAmounts();
         currentIndex++;
       }
     } else if (currentIndex == 2) {
@@ -147,9 +194,12 @@ class SplitProvider extends ChangeNotifier {
   onDispose() {
     displayContacts.clear();
     selectedContacts.clear();
+    payers.clear();
+    _contributionControllers.clear();
     currentIndex = 0;
     billName = '';
     billAmount = '';
     billCategory = '';
+    notifyListeners();
   }
 }
