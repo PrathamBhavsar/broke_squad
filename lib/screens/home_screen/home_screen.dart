@@ -6,7 +6,6 @@ import 'package:contri_buter/screens/home_screen/widgets/filter_widget.dart';
 import 'package:contri_buter/screens/home_screen/widgets/info_widget.dart';
 import 'package:contri_buter/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:contri_buter/constants/UI.dart';
 import 'package:contri_buter/providers/user_provider.dart';
 
