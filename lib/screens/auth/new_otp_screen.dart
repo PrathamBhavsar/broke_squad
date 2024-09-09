@@ -3,7 +3,6 @@ import 'package:contri_buter/providers/auth_provider.dart';
 import 'package:contri_buter/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
 
@@ -80,7 +79,6 @@ class _OptInputScreenState extends State<OptInputScreen> {
                             context,
                             widget.phoneNumber,
                           );
-                          Fluttertoast.showToast(msg: 'value: $value');
                         }
                       },
                       onSubmitted: (value) {

@@ -12,6 +12,7 @@ class AppColors {
   static Color kDarkColor = Color(0xFF000000);
   static Color kAuthTextFieldColor = Color.fromRGBO(235, 240, 245, 1);
   static Color grey = Color(0xFF9B9B9B);
+  static Color kSubColor = Color.fromRGBO(160, 0, 15, 1);
 }
 
 class AppPaddings {
@@ -61,4 +62,6 @@ class AppTextStyles {
   );
   static TextStyle kCreateBillTextFieldTextStyle =
       poppins.copyWith(color: AppColors.grey, fontWeight: FontWeight.w600, fontSize: 13.sp);
+  static TextStyle kProfileScreenTextStyle = AppTextStyles.poppins
+      .copyWith(color: AppColors.kAuthTextFieldColor, fontSize: 18.sp,fontWeight: FontWeight.w600,);
 }

@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:contri_buter/models/user.dart';
 
 class AuthProvider extends ChangeNotifier {
+  static final AuthProvider instance = AuthProvider._privateConstructor();
   bool _isVisible = false;
   bool _isLoading = false;
   String? _verificationId;
@@ -16,6 +17,7 @@ class AuthProvider extends ChangeNotifier {
   bool get isVisible => _isVisible;
   bool get isLoading => _isLoading;
 
+  AuthProvider._privateConstructor();
   void toggleVisibility() {
     _isVisible = !_isVisible;
     notifyListeners();

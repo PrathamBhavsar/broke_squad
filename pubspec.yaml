@@ -63,6 +63,7 @@ dependencies:
   fl_chart: ^0.69.0
   animated_emoji: ^3.1.0
   lottie: ^3.1.2
+  url_launcher: ^6.3.0
 
 dev_dependencies:
   flutter_test:

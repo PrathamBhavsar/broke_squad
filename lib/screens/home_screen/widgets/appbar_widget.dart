@@ -1,8 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:contri_buter/providers/user_provider.dart';
+import 'package:contri_buter/screens/home_screen/profile_screen.dart';
 import 'package:contri_buter/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:shimmer/shimmer.dart';
 
 class AppbarWidget extends StatefulWidget {
@@ -19,9 +19,7 @@ class _AppbarWidgetState extends State<AppbarWidget> {
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         InkWell(
-          onTap: () {
-            context.goNamed('profile');
-          },
+          onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) => ProfileScreen(),)),
           child: FutureBuilder<String?>(
             future: UserProvider.instance.getProfileImage(),
             builder: (context, snapshot) {

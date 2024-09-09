@@ -12,12 +12,13 @@ import 'constants/routes.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-
+  //TODO: After Getting API Key Uncomment this!
+ // await RevCat.initSDK();
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => UserProvider.instance),
-        ChangeNotifierProvider(create: (context) => AuthProvider()),
+        ChangeNotifierProvider(create: (context) => AuthProvider.instance),
         ChangeNotifierProvider(create: (context) => SplitProvider.instance),
       ],
       child: ScreenUtilInit(
