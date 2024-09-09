@@ -1,3 +1,4 @@
+import 'package:contri_buter/controllers/firebase_controller.dart';
 import 'package:contri_buter/models/transaction.dart';
 import 'package:contri_buter/screens/create_bill_screen/create_bill_screen.dart';
 import 'package:contri_buter/screens/home_screen/widgets/appbar_widget.dart';
@@ -23,11 +24,20 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
-
     // Initialize the future to fetch transactions
-    _transactionsFuture =
-        userProvider.fetchTransactions().then((_) => userProvider.transactions);
+    _transactionsFuture = _fetchTransactions();
+  }
+
+  Future<List<TransactionModel>> _fetchTransactions() async {
+    // Fetch transactions from Firebase
+    return FirebaseController.instance.getTransactions();
+  }
+
+  Future<void> _refreshTransactions() async {
+    // Refresh transactions by fetching them again
+    setState(() {
+      _transactionsFuture = _fetchTransactions();
+    });
   }
 
   @override
@@ -60,57 +70,60 @@ class _HomeScreenState extends State<HomeScreen> {
         automaticallyImplyLeading: false,
         title: AppbarWidget(),
       ),
-      body: Padding(
-        padding: AppPaddings.scaffoldPadding,
-        child: FutureBuilder<List<TransactionModel>>(
-          future: _transactionsFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child: CircularProgressIndicator(), // Show loading indicator
-              );
-            } else if (snapshot.hasError) {
-              return Center(
-                child: Text('Error fetching transactions'),
-              );
-            } else if (snapshot.hasData) {
-              final transactions = snapshot.data!;
+      body: RefreshIndicator(
+        onRefresh: _refreshTransactions, // Set the refresh callback
+        child: Padding(
+          padding: AppPaddings.scaffoldPadding,
+          child: FutureBuilder<List<TransactionModel>>(
+            future: _transactionsFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(
+                  child: CircularProgressIndicator(), // Show loading indicator
+                );
+              } else if (snapshot.hasError) {
+                return Center(
+                  child: Text('Error fetching transactions'),
+                );
+              } else if (snapshot.hasData) {
+                final transactions = snapshot.data!;
 
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  InfoWidget(
-                      selectedGroup: _selectedGroup,
-                      transactions:
-                          transactions), // Pass transactions and selected group
-                  SizedBox(height: 10),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Transactions',
-                      style: AppTextStyles.kPhoneInputTextFieldTextStyle,
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    InfoWidget(
+                        selectedGroup: _selectedGroup,
+                        transactions:
+                            transactions), // Pass transactions and selected group
+                    SizedBox(height: 10),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Transactions',
+                        style: AppTextStyles.kPhoneInputTextFieldTextStyle,
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 10),
-                  Expanded(
-                    child: TransactionFilterWidget(
-                      transactions: transactions,
-                      selectedGroup: _selectedGroup,
-                      onGroupSelected: (group) {
-                        setState(() {
-                          _selectedGroup = group; // Update selected group
-                        });
-                      },
+                    SizedBox(height: 10),
+                    Expanded(
+                      child: TransactionFilterWidget(
+                        transactions: transactions,
+                        selectedGroup: _selectedGroup,
+                        onGroupSelected: (group) {
+                          setState(() {
+                            _selectedGroup = group; // Update selected group
+                          });
+                        },
+                      ),
                     ),
-                  ),
-                ],
-              );
-            } else {
-              return Center(
-                child: Text('No transactions available'),
-              );
-            }
-          },
+                  ],
+                );
+              } else {
+                return Center(
+                  child: Text('No transactions available'),
+                );
+              }
+            },
+          ),
         ),
       ),
     );
