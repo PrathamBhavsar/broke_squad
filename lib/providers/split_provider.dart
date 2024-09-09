@@ -165,6 +165,7 @@ class SplitProvider extends ChangeNotifier {
     } else if (currentIndex == 2) {
       _save();
       Fluttertoast.showToast(msg: 'Transaction Created!');
+      Navigator.pop(context);
     }
     notifyListeners();
   }
