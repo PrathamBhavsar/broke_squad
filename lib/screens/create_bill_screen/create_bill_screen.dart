@@ -94,6 +94,15 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
                 splitProvider.payers.forEach((payer) {
                   String contribution =
                       _contributionControllers[payer]?.text ?? '0';
+
+                  // If the contribution is empty or zero, use the calculated amount per payer
+                  if (contribution.isEmpty || contribution == '0') {
+                    double amountPerPayer = splitProvider
+                        .amountPerPayer; // Assuming you have a method to calculate this
+                    contribution = amountPerPayer.toStringAsFixed(2);
+                  }
+                  splitProvider.manageContinue(context);
+
                   print('${payer.name} contributed $contribution');
                 });
               } else if (splitProvider.currentIndex == 1) {

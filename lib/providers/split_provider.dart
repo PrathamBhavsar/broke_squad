@@ -165,7 +165,6 @@ class SplitProvider extends ChangeNotifier {
     } else if (currentIndex == 2) {
       _save();
       Fluttertoast.showToast(msg: 'Transaction Created!');
-      Navigator.pop(context);
     }
     notifyListeners();
   }
@@ -175,18 +174,50 @@ class SplitProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  _save() async {
+  void _save() async {
+    // Create a map for contributors and unpaid participants
+    Map<String, dynamic> contributors = {};
+    Map<String, dynamic> unpaidParticipants = {};
+
+    // Calculate the contributors' map
+    for (var contact in payers) {
+      String phoneNumber = contact.phNo;
+
+      // Get the contribution from the controller or use amountPerPayer if it's 0.00 or empty
+      String controllerText = _contributionControllers[contact]?.text ?? '0.00';
+      double contribution = double.tryParse(controllerText) ?? amountPerPayer;
+
+      contributors[phoneNumber] = {
+        'amount': contribution.toStringAsFixed(2),
+        'name': contact.name
+      };
+    }
+
+    // Calculate the unpaid participants' map (those who are not payers)
+    for (var contact in selectedContacts) {
+      if (!payers.contains(contact)) {
+        String phoneNumber = contact.phNo;
+        unpaidParticipants[phoneNumber] = {
+          'amount': '0.00',
+          'name': contact.name
+        };
+      }
+    }
+
+    // Creating the TransactionModel with the new structure
     TransactionModel transactionModel = TransactionModel(
-        id: '-1',
-        createdBy: FirebaseAuth.instance.currentUser!.phoneNumber.toString(),
-        title: billName,
-        amount: double.parse(billAmount),
-        category: billCategory,
-        contributors: TransactionModel.peopleFromList(selectedContacts,
-            double.parse(billAmount) / (selectedContacts.length + 1)),
-        unpaidParticipants: TransactionModel.peopleFromList(selectedContacts,
-            double.parse(billAmount) / (selectedContacts.length + 1)),
-        dateTime: DateTime.now());
+      id: '-1',
+      createdBy: FirebaseAuth.instance.currentUser!.phoneNumber.toString(),
+      title: billName,
+      amount: double.parse(billAmount),
+      category: billCategory,
+      contributors: contributors, // Use the newly created contributors map
+      unpaidParticipants:
+          unpaidParticipants, // Use the newly created unpaid participants map
+      dateTime: DateTime.now(),
+    );
+
+    // Log the event and save the transaction
     logEvent(str: "${transactionModel.toJson()}");
     await FirebaseController.instance.saveTransaction(transactionModel);
   }
