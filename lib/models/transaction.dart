@@ -27,7 +27,7 @@ class TransactionModel {
         'category': category,
         'contributors': contributors,
         'unpaidParticipants': unpaidParticipants,
-        'dataTime': dateTime,
+        'dateTime': dateTime,
         'amount': amount,
         'createdBy': createdBy,
       };
@@ -50,7 +50,8 @@ class TransactionModel {
     return 'TransactionModel(id: $id, category: $category, contributors: $contributors, dateTime: $dateTime, amount: $amount, unpaidParticipants: $unpaidParticipants, title: $title)';
   }
 
-  static Map<String, dynamic> peopleFromList(List<MyContact> contacts, double amount) {
+  static Map<String, dynamic> peopleFromList(
+      List<MyContact> contacts, double amount) {
     final Map<String, dynamic> res = {};
     for (MyContact contact in contacts) {
       res.putIfAbsent(

@@ -15,7 +15,8 @@ class SplitProvider extends ChangeNotifier {
   String billAmount = '';
   String billCategory = '';
   int currentIndex = 0;
-  List<String> abbBarTitles = ['Add People', 'Create Bill'];
+  List<MyContact> payers = [];
+  List<String> abbBarTitles = ['Add People', 'Create Bill', 'Who Paid'];
 
   SplitProvider._privateConstructor();
   static final SplitProvider instance = SplitProvider._privateConstructor();
@@ -71,6 +72,20 @@ class SplitProvider extends ChangeNotifier {
     selectedContacts.remove(contact);
   }
 
+  void addPayer(MyContact contact) {
+    if (!payers.contains(contact)) {
+      payers.add(contact);
+      notifyListeners();
+    }
+  }
+
+  void removePayer(MyContact contact) {
+    if (payers.contains(contact)) {
+      payers.remove(contact);
+      notifyListeners();
+    }
+  }
+
   setBillName(String str) {
     billName = str;
   }
@@ -84,18 +99,26 @@ class SplitProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  manageContinue(context, [Function? setParams]) {
+  void manageContinue(BuildContext context, [Function? setParams]) {
     if (currentIndex == 0) {
-      selectedContacts.isEmpty
-          ? Fluttertoast.showToast(msg: 'Add People to Continue')
-          : currentIndex++;
+      if (selectedContacts.isEmpty) {
+        Fluttertoast.showToast(msg: 'Add People to Continue');
+      } else {
+        currentIndex++;
+      }
     } else if (currentIndex == 1) {
-      setParams != null ? setParams() : null;
+      if (setParams != null) {
+        setParams();
+      }
+      if (billName.isEmpty || billAmount.isEmpty) {
+        Fluttertoast.showToast(msg: 'Enter Bill Name and Amount to Continue');
+      } else {
+        currentIndex++;
+      }
+    } else if (currentIndex == 2) {
       _save();
       Fluttertoast.showToast(msg: 'Transaction Created!');
       Navigator.pop(context);
-    } else {
-      currentIndex = 0;
     }
     notifyListeners();
   }
@@ -112,10 +135,10 @@ class SplitProvider extends ChangeNotifier {
         title: billName,
         amount: double.parse(billAmount),
         category: billCategory,
-        contributors: TransactionModel.peopleFromList(
-            selectedContacts, double.parse(billAmount) / (selectedContacts.length + 1)),
-        unpaidParticipants: TransactionModel.peopleFromList(
-            selectedContacts, double.parse(billAmount) / (selectedContacts.length + 1)),
+        contributors: TransactionModel.peopleFromList(selectedContacts,
+            double.parse(billAmount) / (selectedContacts.length + 1)),
+        unpaidParticipants: TransactionModel.peopleFromList(selectedContacts,
+            double.parse(billAmount) / (selectedContacts.length + 1)),
         dateTime: DateTime.now());
     logEvent(str: "${transactionModel.toJson()}");
     await FirebaseController.instance.saveTransaction(transactionModel);

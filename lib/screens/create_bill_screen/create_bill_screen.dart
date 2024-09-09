@@ -55,7 +55,11 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
   Widget build(BuildContext context) {
     return Consumer<SplitProvider>(
       builder: (context, splitProvider, child) {
-        List<Widget> views = [_buildAddPeople(splitProvider), _buildBillData(splitProvider)];
+        List<Widget> views = [
+          _buildAddPeople(splitProvider),
+          _buildBillData(splitProvider),
+          _buildWhoPaid(splitProvider)
+        ];
         return Scaffold(
           appBar: AppBar(
             centerTitle: true,
@@ -77,22 +81,25 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
                             kBottomNavigationBarHeight -
                             kToolbarHeight -
                             24 * 3), // 24 * 3 to adjust paddings
-                    child: IntrinsicHeight(child: views[splitProvider.currentIndex]))),
+                    child: IntrinsicHeight(
+                        child: views[splitProvider.currentIndex]))),
           ),
           bottomNavigationBar: ContinueButton(
             onPressed: () {
               if (splitProvider.currentIndex == 0) {
                 splitProvider.manageContinue(context);
-              } else {
+              } else if (splitProvider.currentIndex == 1) {
                 splitProvider.manageContinue(context, () {
                   if (validateBillData()) {
                     splitProvider.setBillName(_billNameController.text);
                     splitProvider.setBillAmount(_amountController.text);
-                    splitProvider.billCategory.isEmpty
-                        ? splitProvider.setBillCategory(categories.last.toString())
-                        : null;
+                    if (splitProvider.billCategory.isEmpty) {
+                      splitProvider.setBillCategory(categories.last.toString());
+                    }
                   }
                 });
+              } else {
+                splitProvider.manageContinue(context);
               }
             },
           ),
@@ -120,7 +127,8 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
           alignment: Alignment.topLeft,
           child: Text(
             'Search Contact',
-            style: AppTextStyles.kCreateBillAppBarTitleTextStyle.copyWith(fontSize: 14.sp),
+            style: AppTextStyles.kCreateBillAppBarTitleTextStyle
+                .copyWith(fontSize: 14.sp),
           ),
         ),
         spaceH10(),
@@ -130,17 +138,19 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
           hintText: 'Search...',
         ),
         spaceH10(),
-        AvatarIndicator(context: context, selectedContacts: splitProvider.selectedContacts),
+        AvatarIndicator(
+            context: context, selectedContacts: splitProvider.selectedContacts),
         spaceH20(),
         splitProvider.displayContacts.isEmpty
             ? ElevatedButton(
-                onPressed: () async => await FlutterContacts.openExternalInsert().whenComplete(
+                onPressed: () async =>
+                    await FlutterContacts.openExternalInsert().whenComplete(
                       () async => await splitProvider.getContact(),
                     ),
                 child: Text(
                   'Add Contact',
-                  style: AppTextStyles.poppins
-                      .copyWith(color: AppColors.grey, fontWeight: FontWeight.w500),
+                  style: AppTextStyles.poppins.copyWith(
+                      color: AppColors.grey, fontWeight: FontWeight.w500),
                 ))
             : Flexible(
                 child: SizedBox(
@@ -148,25 +158,30 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
                   child: ListView.builder(
                     itemBuilder: (context, index) {
                       return ListTile(
-                        leading: ContactCircleAvatar(contact: splitProvider.displayContacts[index]),
+                        leading: ContactCircleAvatar(
+                            contact: splitProvider.displayContacts[index]),
                         title: Text(
                           splitProvider.displayContacts[index].name,
                           style: AppTextStyles.kCreateBillAppBarTitleTextStyle
                               .copyWith(fontSize: 13.sp),
                         ),
-                        subtitle: Text(splitProvider.displayContacts[index].phNo,
+                        subtitle: Text(
+                            splitProvider.displayContacts[index].phNo,
                             style: AppTextStyles.kCreateBillAppBarTitleTextStyle
-                                .copyWith(fontSize: 12.sp, fontWeight: FontWeight.w500)),
+                                .copyWith(
+                                    fontSize: 12.sp,
+                                    fontWeight: FontWeight.w500)),
                         trailing: Checkbox(
                           value: splitProvider.selectedContacts.isNotEmpty
-                              ? splitProvider.selectedContacts
-                                  .contains(splitProvider.displayContacts[index])
+                              ? splitProvider.selectedContacts.contains(
+                                  splitProvider.displayContacts[index])
                               : false,
                           onChanged: (value) => setState(() => value != null
                               ? (!value
-                                  ? splitProvider
-                                      .removeContact(splitProvider.displayContacts[index])
-                                  : splitProvider.addContact(splitProvider.displayContacts[index]))
+                                  ? splitProvider.removeContact(
+                                      splitProvider.displayContacts[index])
+                                  : splitProvider.addContact(
+                                      splitProvider.displayContacts[index]))
                               : null),
                           shape: CircleBorder(),
                         ),
@@ -186,7 +201,8 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
         spaceH10(),
         Stack(
           children: [
-            AvatarIndicator(context: context, selectedContacts: provider.selectedContacts),
+            AvatarIndicator(
+                context: context, selectedContacts: provider.selectedContacts),
             Padding(
               padding: const EdgeInsets.all(4.0),
               child: Align(
@@ -209,7 +225,8 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
           alignment: Alignment.centerLeft,
           child: Text(
             'Bill Name',
-            style: AppTextStyles.kCreateBillAppBarTitleTextStyle.copyWith(fontSize: 14.sp),
+            style: AppTextStyles.kCreateBillAppBarTitleTextStyle
+                .copyWith(fontSize: 14.sp),
           ),
         ),
         CreateBillViewTextField(
@@ -222,7 +239,8 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
           alignment: Alignment.centerLeft,
           child: Text(
             'Bill Amount',
-            style: AppTextStyles.kCreateBillAppBarTitleTextStyle.copyWith(fontSize: 14.sp),
+            style: AppTextStyles.kCreateBillAppBarTitleTextStyle
+                .copyWith(fontSize: 14.sp),
           ),
         ),
         CreateBillViewTextField(
@@ -239,9 +257,10 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
               InkWell(
                 onTap: () => provider.setBillCategory(category.toString()),
                 child: Chip(
-                  color: WidgetStatePropertyAll(provider.billCategory == category.toString()
-                      ? Colors.grey.shade400
-                      : AppColors.lightGrey),
+                  color: WidgetStatePropertyAll(
+                      provider.billCategory == category.toString()
+                          ? Colors.grey.shade400
+                          : AppColors.lightGrey),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(24.r),
                       side: BorderSide(color: AppColors.grey, width: 1)),
@@ -257,6 +276,62 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
               )
           ],
         )
+      ],
+    );
+  }
+
+  _buildWhoPaid(SplitProvider splitProvider) {
+    return Column(
+      children: [
+        Align(
+          alignment: Alignment.topLeft,
+          child: Text(
+            'Who Paid?',
+            style: AppTextStyles.kCreateBillAppBarTitleTextStyle
+                .copyWith(fontSize: 14.sp),
+          ),
+        ),
+        spaceH10(),
+        Flexible(
+          child: SizedBox(
+            height: getHeight(context),
+            child: ListView.builder(
+              itemCount: splitProvider.selectedContacts.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  leading: ContactCircleAvatar(
+                      contact: splitProvider.selectedContacts[index]),
+                  title: Text(
+                    splitProvider.selectedContacts[index].name,
+                    style: AppTextStyles.kCreateBillAppBarTitleTextStyle
+                        .copyWith(fontSize: 13.sp),
+                  ),
+                  subtitle: Text(
+                    splitProvider.selectedContacts[index].phNo,
+                    style: AppTextStyles.kCreateBillAppBarTitleTextStyle
+                        .copyWith(fontSize: 12.sp, fontWeight: FontWeight.w500),
+                  ),
+                  trailing: Checkbox(
+                    value: splitProvider.payers
+                        .contains(splitProvider.selectedContacts[index]),
+                    onChanged: (value) {
+                      setState(() {
+                        if (value == true) {
+                          splitProvider
+                              .addPayer(splitProvider.selectedContacts[index]);
+                        } else {
+                          splitProvider.removePayer(
+                              splitProvider.selectedContacts[index]);
+                        }
+                      });
+                    },
+                    shape: CircleBorder(),
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
       ],
     );
   }
