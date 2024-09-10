@@ -1,6 +1,7 @@
 import 'package:contri_buter/controllers/firebase_controller.dart';
-import 'package:contri_buter/models/contacts.dart';
 import 'package:contri_buter/models/transaction.dart';
+import 'package:contri_buter/models/user.dart';
+import 'package:contri_buter/providers/user_provider.dart';
 import 'package:contri_buter/utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -8,15 +9,15 @@ import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class SplitProvider extends ChangeNotifier {
-  List<MyContact> allContacts = [];
-  List<MyContact> displayContacts = [];
-  List<MyContact> selectedContacts = [];
+  List<UserModel> allContacts = [];
+  List<UserModel> displayContacts = [];
+  List<UserModel> selectedContacts = [];
   String billName = '';
   String billAmount = '';
   String billCategory = '';
   int currentIndex = 0;
-  List<MyContact> payers = [];
-  Map<MyContact, TextEditingController> _contributionControllers = {};
+  List<UserModel> payers = [];
+  Map<UserModel, TextEditingController> _contributionControllers = {};
   List<String> abbBarTitles = ['Add People', 'Create Bill', 'Who Paid'];
   double amountPerPayer = 0;
 
@@ -24,24 +25,24 @@ class SplitProvider extends ChangeNotifier {
   static final SplitProvider instance = SplitProvider._privateConstructor();
 
   Future<void> getContact() async {
-    List<MyContact> myContacts = [];
+    List<String> myPhoneNum = [];
+
+    List<UserModel> myContacts = [];
     bool check = await FlutterContacts.requestPermission();
 
     if (check) {
       final contacts = await FlutterContacts.getContacts(withProperties: true);
-      contacts.isEmpty
-          ? logEvent(str: 'Empty')
-          : {
-              for (int i = 0; i < contacts.length; i++)
-                {
-                  for (int j = 0; j < contacts[i].phones.length; j++)
-                    {
-                      myContacts.add(MyContact(
-                          name: contacts[i].displayName,
-                          phNo: contacts[i].phones[j].normalizedNumber))
-                    }
-                }
-            };
+      if (contacts.isNotEmpty)
+        contacts.forEach(
+          (contact) => contact.phones.forEach(
+            (number) => myPhoneNum.add(
+              number.number.replaceAll(" ", '').toString(),
+            ),
+          ),
+        );
+
+      myContacts = await FirebaseController.instance.getAppUsers(myPhoneNum);
+      myContacts.removeWhere((element) => element.phoneNumber == UserProvider.instance.user!.phoneNumber,);
     } else {
       logError(str: 'Not Allowed');
     }
@@ -58,25 +59,25 @@ class SplitProvider extends ChangeNotifier {
       displayContacts = allContacts
           .where(
             (element) =>
-                element.name.toLowerCase().contains(str.toLowerCase()) ||
-                element.phNo.contains(str),
+                element.userName.toLowerCase().contains(str.toLowerCase()) ||
+                element.phoneNumber.contains(str),
           )
           .toList();
     }
     notifyListeners();
   }
 
-  addContact(MyContact contact) {
+  addContact(UserModel contact) {
     selectedContacts.add(contact);
     notifyListeners();
   }
 
-  removeContact(MyContact contact) {
+  removeContact(UserModel contact) {
     selectedContacts.remove(contact);
     notifyListeners();
   }
 
-  void addPayer(MyContact contact) {
+  void addPayer(UserModel contact) {
     if (!payers.contains(contact)) {
       payers.add(contact);
       _contributionControllers[contact] = TextEditingController();
@@ -85,7 +86,7 @@ class SplitProvider extends ChangeNotifier {
     }
   }
 
-  void removePayer(MyContact contact) {
+  void removePayer(UserModel contact) {
     if (payers.contains(contact)) {
       payers.remove(contact);
       _contributionControllers.remove(contact);
@@ -99,8 +100,7 @@ class SplitProvider extends ChangeNotifier {
     amountPerPayer = double.parse(billAmount) / payers.length;
 
     for (var contact in payers) {
-      _contributionControllers[contact]?.text =
-          amountPerPayer.toStringAsFixed(2);
+      _contributionControllers[contact]?.text = amountPerPayer.toStringAsFixed(2);
     }
   }
 
@@ -110,7 +110,7 @@ class SplitProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateContributions(MyContact editedContact, String editedAmount) {
+  void updateContributions(UserModel editedContact, String editedAmount) {
     double totalBillAmount = double.parse(billAmount);
     double editedAmountValue = double.tryParse(editedAmount) ?? 0.0;
 
@@ -118,12 +118,10 @@ class SplitProvider extends ChangeNotifier {
     int remainingPayers = payers.length - 1;
 
     if (remainingPayers > 0) {
-      amountPerPayer =
-          remainingAmount / remainingPayers; // Update the amountPerPayer
+      amountPerPayer = remainingAmount / remainingPayers; // Update the amountPerPayer
       for (var contact in payers) {
         if (contact != editedContact) {
-          _contributionControllers[contact]?.text =
-              amountPerPayer.toStringAsFixed(2);
+          _contributionControllers[contact]?.text = amountPerPayer.toStringAsFixed(2);
         }
       }
     }
@@ -131,7 +129,7 @@ class SplitProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  String getHintText(MyContact contact) {
+  String getHintText(UserModel contact) {
     return amountPerPayer.toStringAsFixed(2);
   }
 
@@ -182,7 +180,7 @@ class SplitProvider extends ChangeNotifier {
 
     // Calculate the contributors' map
     for (var contact in payers) {
-      String phoneNumber = contact.phNo;
+      String phoneNumber = contact.phoneNumber;
 
       // Get the contribution from the controller or use amountPerPayer if it's 0.00 or empty
       String controllerText = _contributionControllers[contact]?.text ?? '0.00';
@@ -190,17 +188,19 @@ class SplitProvider extends ChangeNotifier {
 
       contributors[phoneNumber] = {
         'amount': contribution.toStringAsFixed(2),
-        'name': contact.name
+        'name': contact.userName,
+        'profile_picture': contact.profileImage,
       };
     }
 
     // Calculate the unpaid participants' map (those who are not payers)
     for (var contact in selectedContacts) {
       if (!payers.contains(contact)) {
-        String phoneNumber = contact.phNo;
+        String phoneNumber = contact.phoneNumber;
         unpaidParticipants[phoneNumber] = {
           'amount': '0.00',
-          'name': contact.name
+          'name': contact.userName,
+          'profile_picture': contact.profileImage,
         };
       }
     }
@@ -213,8 +213,7 @@ class SplitProvider extends ChangeNotifier {
       amount: double.parse(billAmount),
       category: billCategory,
       contributors: contributors, // Use the newly created contributors map
-      unpaidParticipants:
-          unpaidParticipants, // Use the newly created unpaid participants map
+      unpaidParticipants: unpaidParticipants, // Use the newly created unpaid participants map
       dateTime: DateTime.now(),
     );
 

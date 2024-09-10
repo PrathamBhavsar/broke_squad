@@ -1,5 +1,5 @@
 import 'package:contri_buter/constants/UI.dart';
-import 'package:contri_buter/models/contacts.dart';
+import 'package:contri_buter/models/user.dart';
 import 'package:contri_buter/screens/create_bill_screen/widgets/contact_avatar.dart';
 import 'package:contri_buter/utils.dart';
 import 'package:dotted_border/dotted_border.dart';
@@ -11,11 +11,11 @@ class AvatarIndicator extends StatelessWidget {
   const AvatarIndicator({
     super.key,
     required this.context,
-    required List<MyContact> selectedContacts,
+    required List<UserModel> selectedContacts,
   }) : _selectedContacts = selectedContacts;
 
   final BuildContext context;
-  final List<MyContact> _selectedContacts;
+  final List<UserModel> _selectedContacts;
 
   @override
   Widget build(BuildContext context) {

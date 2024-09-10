@@ -22,9 +22,9 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   List<Map<String, String>> appFeatures = [
-    {"feature": "Unlimited Bills", "emoji": "📝💥"},
-    {"feature": "No Ads", "emoji": "🚫🙅‍♂️"},
-    {"feature": "Split Unevenly", "emoji": "🤝💸"},
+    {"feature": "Unlimited Bills", "emoji": "📝"},
+    {"feature": "No Ads", "emoji": "🚫"},
+    // {"feature": "Split Unevenly", "emoji": "🤝💸"},
   ];
 
   Subscription subscription = Subscription(
@@ -52,7 +52,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    subscription.isActive = true;
+    subscription.isActive  = false;
     return Scaffold(
       backgroundColor: AppColors.kAuthTextFieldColor,
       appBar: AppBar(
@@ -127,16 +127,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
               spaceH20(),
+              Card(
+                color: AppColors.kPrimaryColor ,
+                elevation: 1.2,
 
-                Card(
-                  color: AppColors.kPrimaryColor,
-                  elevation: 1.2,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),
-                    child:subscription.isActive ? _buildSubscribedCard() : _buildNotSubscribedCard(),
-                  ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),
+                  child: subscription.isActive ? _buildSubscribedCard() : _buildNotSubscribedCard(),
                 ),
-
+              ),
               Spacer(),
               Row(
                 children: [
@@ -171,7 +170,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     child: SizedBox(
                       height: 50,
                       child: ElevatedButton(
-                        onPressed: ()=>AuthProvider.instance.logout(context),
+                        onPressed: () => AuthProvider.instance.logout(context),
                         style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
                           backgroundColor: AppColors.kPrimaryColor,
@@ -193,68 +192,65 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
   }
+
   _buildSubscribedCard() => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        'You Are Pro!',
-        style: AppTextStyles.kProfileScreenTextStyle.copyWith(fontSize: 22.sp),
-      ),
-      spaceH10(),
-      Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          RichText(
-            text: TextSpan(
-              children: [
-                TextSpan(
-                    text: 'Monthly Plan\n',
-                    style: AppTextStyles.kProfileScreenTextStyle),
-                TextSpan(
-                    text:
-                    'Expire on: ${subscription.expireAt.day}, ${DateFormat('MMMM').format(subscription.expireAt)}',
-                    style: AppTextStyles.kProfileScreenTextStyle),
-              ],
-            ),
+          Text(
+            'You Are Pro!',
+            style: AppTextStyles.kProfileScreenTextStyle.copyWith(fontSize: 22.sp),
           ),
-          ElevatedButton(
-            onPressed: subscription.isActive
-                ? ()=>_launchMyUrl(
-                'https://play.google.com/store/account/subscriptions')
-                : _startInAppPurchase(),
-            child: Text(
-              subscription.isActive ? 'Manage' : 'Explore',
-              style:
-              AppTextStyles.kProfileScreenTextStyle.copyWith(fontSize: 12.sp),
-            ),
-            style: ButtonStyle(
-              elevation: WidgetStatePropertyAll(1.5),
-              shape: WidgetStatePropertyAll(
-                RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12.r),
+          spaceH10(),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(text: 'Monthly Plan\n', style: AppTextStyles.kProfileScreenTextStyle),
+                    TextSpan(
+                        text:
+                            'Expire on: ${subscription.expireAt.day}, ${DateFormat('MMMM').format(subscription.expireAt)}',
+                        style: AppTextStyles.kProfileScreenTextStyle),
+                  ],
                 ),
               ),
-              backgroundColor: WidgetStatePropertyAll(
-                AppColors.kSubColor,
-              ),
-            ),
+              ElevatedButton(
+                onPressed: subscription.isActive
+                    ? () => _launchMyUrl('https://play.google.com/store/account/subscriptions')
+                    : _startInAppPurchase(),
+                child: Text(
+                  subscription.isActive ? 'Manage' : 'Explore',
+                  style: AppTextStyles.kProfileScreenTextStyle.copyWith(fontSize: 12.sp),
+                ),
+                style: ButtonStyle(
+                  elevation: WidgetStatePropertyAll(1.5),
+                  shape: WidgetStatePropertyAll(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
+                  ),
+                  backgroundColor: WidgetStatePropertyAll(
+                    AppColors.kSubColor,
+                  ),
+                ),
+              )
+            ],
           )
         ],
-      )
-    ],
-  );
+      );
   _buildNotSubscribedCard() => Column(
-    children: [
-      Text(
-        'App Features',
-        style: AppTextStyles.kProfileScreenTextStyle,
-      ),
-      spaceH20(),
-      for (var feature in appFeatures)
-        FeaturesTile(emoji: feature['emoji']!, title:feature['feature']!)
-    ],
-  );
+        children: [
+          Text(
+            'App Features',
+            style: AppTextStyles.kProfileScreenTextStyle,
+          ),
+          spaceH20(),
+          for (var feature in appFeatures)
+            FeaturesTile(emoji: feature['emoji']!, title: feature['feature']!)
+        ],
+      );
 }
 
 class FeaturesTile extends StatelessWidget {
@@ -264,9 +260,15 @@ class FeaturesTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: Text(
-        emoji,
-        style: AppTextStyles.kProfileScreenTextStyle,
+      leading: Card(
+        shape: CircleBorder(),
+        child: Padding(
+          padding: const EdgeInsets.all(3.0),
+          child: Text(
+            emoji,
+            style: AppTextStyles.kProfileScreenTextStyle,
+          ),
+        ),
       ),
       title: Text(title, style: AppTextStyles.kProfileScreenTextStyle),
     );

@@ -1,5 +1,5 @@
 import 'package:contri_buter/constants/UI.dart';
-import 'package:contri_buter/models/contacts.dart';
+import 'package:contri_buter/models/user.dart';
 import 'package:contri_buter/providers/split_provider.dart';
 import 'package:contri_buter/screens/create_bill_screen/widgets/avatar_indicator.dart';
 import 'package:contri_buter/screens/create_bill_screen/widgets/bill_name_text_field.dart';
@@ -28,7 +28,7 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
   final FocusNode _billNameFocusNode = FocusNode();
   final TextEditingController _amountController = TextEditingController();
   final FocusNode _amountFocusNode = FocusNode();
-  final Map<MyContact, TextEditingController> _contributionControllers = {};
+  final Map<UserModel, TextEditingController> _contributionControllers = {};
 
   @override
   void initState() {
@@ -103,7 +103,7 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
                   }
                   splitProvider.manageContinue(context);
 
-                  print('${payer.name} contributed $contribution');
+                  print('${payer.userName} contributed $contribution');
                 });
               } else if (splitProvider.currentIndex == 1) {
                 splitProvider.manageContinue(context, () {
@@ -178,12 +178,12 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
                         leading: ContactCircleAvatar(
                             contact: splitProvider.displayContacts[index]),
                         title: Text(
-                          splitProvider.displayContacts[index].name,
+                          splitProvider.displayContacts[index].userName,
                           style: AppTextStyles.kCreateBillAppBarTitleTextStyle
                               .copyWith(fontSize: 13.sp),
                         ),
                         subtitle: Text(
-                            splitProvider.displayContacts[index].phNo,
+                            splitProvider.displayContacts[index].phoneNumber,
                             style: AppTextStyles.kCreateBillAppBarTitleTextStyle
                                 .copyWith(
                                     fontSize: 12.sp,
@@ -332,12 +332,12 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
                         borderRadius: BorderRadiusDirectional.circular(20)),
                     leading: ContactCircleAvatar(contact: contact),
                     title: Text(
-                      contact.name,
+                      contact.userName,
                       style: AppTextStyles.kCreateBillAppBarTitleTextStyle
                           .copyWith(fontSize: 13.sp),
                     ),
                     subtitle: Text(
-                      contact.phNo,
+                      contact.phoneNumber,
                       style: AppTextStyles.kCreateBillAppBarTitleTextStyle
                           .copyWith(
                               fontSize: 12.sp, fontWeight: FontWeight.w500),

@@ -6,13 +6,10 @@ import 'package:contri_buter/utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class FirebaseController {
-  static final FirebaseController instance =
-      FirebaseController._privateConstructor();
+  static final FirebaseController instance = FirebaseController._privateConstructor();
   FirebaseController._privateConstructor();
-  CollectionReference userCollection =
-      FirebaseFirestore.instance.collection('users');
-  CollectionReference transactionCollection =
-      FirebaseFirestore.instance.collection('transactions');
+  CollectionReference userCollection = FirebaseFirestore.instance.collection('users');
+  CollectionReference transactionCollection = FirebaseFirestore.instance.collection('transactions');
   CollectionReference subscriptionCollection =
       FirebaseFirestore.instance.collection('subscriptions');
 
@@ -21,8 +18,21 @@ class FirebaseController {
 
   Future<UserModel?> getUser(String uid) async {
     logEvent(str: 'Fetching $uid');
-    return UserModel.fromJson(
-        (await userCollection.doc(uid).get()).data() as Map<String, dynamic>);
+    return UserModel.fromJson((await userCollection.doc(uid).get()).data() as Map<String, dynamic>);
+  }
+  
+  Future<List<UserModel>> getAppUsers(List<String> phNos) async {
+    List<UserModel> users = [];
+
+    phNos.forEach((element) => logEvent(str: element),);
+    try {
+      final response = (await userCollection.where('phone_number',whereIn: phNos).get()).docs;
+      for (var json in response) users.add(UserModel.fromJson(json.data() as Map<String,dynamic>));
+
+    } catch (e) {
+      logError(str: 'Error $e');
+    }
+    return users;
   }
 
   Future<void> saveTransaction(TransactionModel transaction) async =>
@@ -34,9 +44,7 @@ class FirebaseController {
     try {
       final snapshot = await transactionCollection.get();
 
-      _transactions = snapshot.docs
-          .map((doc) => TransactionModel.fromFirestore(doc))
-          .toList();
+      _transactions = snapshot.docs.map((doc) => TransactionModel.fromFirestore(doc)).toList();
       print("Fetched: ${_transactions.join('\n')}");
     } catch (error) {
       print('Error fetching transactions: $error');
@@ -44,10 +52,9 @@ class FirebaseController {
     return _transactions;
   }
 
-  Future<void> saveSubscription(Subscription subscription) async =>
-      await subscriptionCollection
-          .doc(FirebaseAuth.instance.currentUser!.phoneNumber!.toString())
-          .set(subscription.toJson());
+  Future<void> saveSubscription(Subscription subscription) async => await subscriptionCollection
+      .doc(FirebaseAuth.instance.currentUser!.phoneNumber!.toString())
+      .set(subscription.toJson());
 
   Future<Subscription> getSubscription() async =>
       Subscription.fromJson((await subscriptionCollection

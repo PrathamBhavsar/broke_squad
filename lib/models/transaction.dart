@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:contri_buter/models/contacts.dart';
+import 'package:contri_buter/models/user.dart';
 
 class TransactionModel {
   final String id;
@@ -51,12 +51,12 @@ class TransactionModel {
   }
 
   static Map<String, dynamic> peopleFromList(
-      List<MyContact> contacts, double amount) {
+      List<UserModel> contacts, double amount) {
     final Map<String, dynamic> res = {};
-    for (MyContact contact in contacts) {
+    for (UserModel contact in contacts) {
       res.putIfAbsent(
-        contact.phNo,
-        () => {'name': contact.name, 'amount': amount},
+        contact.phoneNumber,
+        () => {'name': contact.userName, 'amount': amount, 'profile_image':contact.profileImage},
       );
     }
     return res;
