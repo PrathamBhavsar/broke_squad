@@ -1,12 +1,17 @@
 import 'package:contri_buter/constants/UI.dart';
+import 'package:contri_buter/controllers/firebase_controller.dart';
 import 'package:contri_buter/models/transaction.dart';
+import 'package:contri_buter/providers/user_provider.dart';
+import 'package:contri_buter/screens/create_bill_screen/widgets/contact_avatar.dart';
+import 'package:contri_buter/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
 
 class TransactionFilterWidget extends StatefulWidget {
   final List<TransactionModel> transactions;
   final String selectedGroup; // Accept the selected group as a parameter
-  final Function(String)
-      onGroupSelected; // Callback to notify when a group is selected
+  final Function(String) onGroupSelected; // Callback to notify when a group is selected
 
   TransactionFilterWidget({
     required this.transactions,
@@ -15,8 +20,7 @@ class TransactionFilterWidget extends StatefulWidget {
   });
 
   @override
-  _TransactionFilterWidgetState createState() =>
-      _TransactionFilterWidgetState();
+  _TransactionFilterWidgetState createState() => _TransactionFilterWidgetState();
 }
 
 class _TransactionFilterWidgetState extends State<TransactionFilterWidget> {
@@ -25,8 +29,51 @@ class _TransactionFilterWidgetState extends State<TransactionFilterWidget> {
     print('Transactions: ${widget.transactions}');
 
     final Set<String> groupNames =
-        widget.transactions.map((transaction) => transaction.title).toSet();
+        widget.transactions.map((transaction) => transaction.category).toSet();
     print('Group Names: $groupNames');
+
+    _handleTap(TransactionModel transaction, bool isPaid) async {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.r),
+                side: BorderSide(color: isPaid ? Colors.green : Colors.red, width: 2)),
+            title: Text(
+              'Mark As ${!isPaid ? 'Paid' : 'UnPaid'}',
+              style: AppTextStyles.kTransactionTitleTextStyle,
+            ),
+            content: Text(
+              '${isPaid ? 'You Didn\'t' : 'Did you'} paid \$${(transaction.amount / transaction.members.length).toStringAsFixed(2)} to ${transaction.createdBy.userName}?',
+              style: AppTextStyles.kTransactionSubtitleTextStyle,
+            ),
+            actions: [
+              TextButton(
+                onPressed: () async {
+                  await FirebaseController.instance.updateTransaction(transaction, isPaid);
+
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  'Yes',
+                  style: AppTextStyles.kTransactionTitleTextStyle.copyWith(color: Colors.green),
+                ),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  'No',
+                  style: AppTextStyles.kTransactionTitleTextStyle.copyWith(color: Colors.red),
+                ),
+              )
+            ],
+          );
+        },
+      ).whenComplete(
+        () => setState(() {}),
+      );
+    }
 
     return Column(
       children: [
@@ -71,13 +118,11 @@ class _TransactionFilterWidgetState extends State<TransactionFilterWidget> {
                       ),
                       label: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 2.0),
-                        child: Text(groupName,
-                            style: AppTextStyles.kTransactionSubtitleTextStyle),
+                        child: Text(groupName, style: AppTextStyles.kTransactionSubtitleTextStyle),
                       ),
                       selected: widget.selectedGroup == groupName,
                       onSelected: (isSelected) {
-                        widget
-                            .onGroupSelected(groupName); // Notify parent widget
+                        widget.onGroupSelected(groupName); // Notify parent widget
                       },
                     )),
               ],
@@ -92,50 +137,89 @@ class _TransactionFilterWidgetState extends State<TransactionFilterWidget> {
             itemCount: widget.transactions.length,
             itemBuilder: (context, index) {
               final transaction = widget.transactions[index];
-              if (widget.selectedGroup == 'All' ||
-                  transaction.title == widget.selectedGroup) {
-                return Column(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                          border: Border.all(
-                              color: AppColors.accentColor, width: 2),
-                          borderRadius: BorderRadiusDirectional.circular(20)),
-                      child: ListTile(
-                        title: Text(
-                          transaction.title,
-                          style: AppTextStyles.kTransactionTitleTextStyle,
-                        ),
-                        subtitle: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                    '${transaction.contributors.keys.join(", ")} paid for',
-                                    style: AppTextStyles
-                                        .kTransactionSubtitleTextStyle),
-                                Text(
-                                    '${transaction.unpaidParticipants.keys.join(", ")}',
-                                    style: AppTextStyles
-                                        .kTransactionSubtitleTextStyle),
-                                Text('${transaction.dateTime.toLocal()}',
-                                    style: AppTextStyles
-                                        .kTransactionSubtitleTextStyle),
-                              ],
-                            ),
-                            Text('\$${transaction.amount.toStringAsFixed(2)}',
-                                style:
-                                    AppTextStyles.kTransactionTitleTextStyle),
-                          ],
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                  ],
+              bool isPaid =
+                  transaction.members['${UserProvider.instance.user!.phoneNumber}']['isPaid'];
+              if (widget.selectedGroup == 'All' || transaction.category == widget.selectedGroup) {
+                return GestureDetector(
+                  onTap: () async => await _handleTap(transaction, isPaid),
+                  child: MyTransactionTile(
+                    isPaid: isPaid,
+                    transaction: transaction,
+                  ),
                 );
+                // Card(
+                //    elevation: 1.5,
+                //    shadowColor: isPaid ? Colors.green : Colors.red,
+                //    shape: RoundedRectangleBorder(
+                //        borderRadius: BorderRadiusDirectional.circular(20.r),
+                //        side: BorderSide(color: isPaid ? Colors.green : Colors.red, width: 2)),
+                //    color: AppColors.kAuthTextFieldColor,
+                //    child: Padding(
+                //      padding: const EdgeInsets.all(8.0),
+                //      child: ListTile(
+                //        shape: RoundedRectangleBorder(
+                //          borderRadius: BorderRadiusDirectional.circular(20.r),
+                //        ),
+                //        onTap: () {},
+                //        isThreeLine: false,
+                //        leading: Container(
+                //            decoration: BoxDecoration(
+                //                border: Border.all(
+                //                  color: isPaid ? Colors.green : Colors.red,
+                //                  width: 2,
+                //                ),
+                //                shape: BoxShape.circle),
+                //            width: 50.w,
+                //            height: 50.h,
+                //            child: ContactCircleAvatar(contact: transaction.createdBy)),
+                //        title: Text(
+                //          transaction.title,
+                //          style: AppTextStyles.kTransactionTitleTextStyle,
+                //        ),
+                //        subtitle: Row(
+                //          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //          children: [
+                //            RichText(
+                //                text: TextSpan(children: [
+                //              TextSpan(
+                //                  text: '${transaction.createdBy.userName} paid for\n',
+                //                  style: AppTextStyles.kTransactionSubtitleTextStyle),
+                //              TextSpan(
+                //                  text:
+                //                      '${transaction.dateTime.toLocal().day}, ${DateFormat('MMMM').format(transaction.dateTime.toLocal())} ${transaction.dateTime.toLocal().year}',
+                //                  style: AppTextStyles.kTransactionSubtitleTextStyle),
+                //            ])),
+                //            Column(
+                //              mainAxisAlignment: MainAxisAlignment.start,
+                //              children: [
+                //                Container(
+                //                  decoration: BoxDecoration(
+                //                      color: isPaid
+                //                          ? Colors.lightGreenAccent
+                //                          : Colors.redAccent.withOpacity(0.4),
+                //                      borderRadius: BorderRadius.circular(12.r),
+                //                      border: Border.all(
+                //                        color: isPaid ? Colors.green : Colors.red,
+                //                        width: 3,
+                //                      )),
+                //                  padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                //                  child: Text(
+                //                    isPaid ? 'Paid' : 'UnPaid',
+                //                    style: AppTextStyles.poppins.copyWith(
+                //                        color: isPaid ? Colors.green : Colors.red,
+                //                        fontSize: 14.sp,
+                //                        fontWeight: FontWeight.bold),
+                //                  ),
+                //                ),
+                //                Text('\$${transaction.amount.toStringAsFixed(2)}',
+                //                    style: AppTextStyles.kTransactionTitleTextStyle),
+                //              ],
+                //            )
+                //          ],
+                //        ),
+                //      ),
+                //    ),
+                //  )
               } else {
                 return SizedBox.shrink();
               }
@@ -143,6 +227,85 @@ class _TransactionFilterWidgetState extends State<TransactionFilterWidget> {
           ),
         ),
       ],
+    );
+  }
+}
+
+class MyTransactionTile extends StatelessWidget {
+  const MyTransactionTile({super.key, this.transaction, this.isPaid});
+  final transaction;
+  final isPaid;
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 1.5,
+      shadowColor: isPaid ? Colors.green : Colors.red,
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadiusDirectional.circular(20.r),
+          side: BorderSide(color: isPaid ? Colors.green : Colors.red, width: 2)),
+      color: AppColors.kAuthTextFieldColor,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Container(
+                  decoration: BoxDecoration(
+                      border: Border.all(
+                        color: isPaid ? Colors.green : Colors.red,
+                        width: 2,
+                      ),
+                      shape: BoxShape.circle),
+                  width: 50.w,
+                  height: 50.h,
+                  child: ContactCircleAvatar(contact: transaction.createdBy)),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  RichText(
+                      text: TextSpan(children: [
+                    TextSpan(
+                      text: transaction.title,
+                      style: AppTextStyles.kTransactionTitleTextStyle,
+                    ),
+                    TextSpan(
+                        text: '\n${transaction.createdBy.userName} paid for\n',
+                        style: AppTextStyles.kTransactionSubtitleTextStyle),
+                    TextSpan(
+                        text:
+                            '${transaction.dateTime.toLocal().day}, ${DateFormat('MMMM').format(transaction.dateTime.toLocal())} ${transaction.dateTime.toLocal().year}',
+                        style: AppTextStyles.kTransactionSubtitleTextStyle),
+                  ])),
+                ],
+              ),
+              Column(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                        color: isPaid ? Colors.greenAccent : Colors.redAccent.withOpacity(0.4),
+                        borderRadius: BorderRadius.circular(12.r),
+                        border: Border.all(
+                          color: isPaid ? Colors.green : Colors.red,
+                          width: 3,
+                        )),
+                    padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                    child: Text(
+                      isPaid ? 'Paid' : 'UnPaid',
+                      style: AppTextStyles.poppins.copyWith(
+                          color: isPaid ? Colors.green : Colors.red,
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  Text('\$${transaction.amount.toStringAsFixed(2)}',
+                      style: AppTextStyles.kTransactionTitleTextStyle),
+                ],
+              )
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

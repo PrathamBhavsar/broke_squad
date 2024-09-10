@@ -23,7 +23,6 @@ class _AppbarWidgetState extends State<AppbarWidget> {
           child: FutureBuilder<String?>(
             future: UserProvider.instance.getProfileImage(),
             builder: (context, snapshot) {
-              logEvent(str: snapshot.data.toString());
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Shimmer.fromColors(
                   baseColor: Colors.grey[300]!,

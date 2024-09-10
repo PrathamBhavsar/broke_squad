@@ -1,9 +1,9 @@
 import 'package:contri_buter/controllers/firebase_controller.dart';
+import 'package:contri_buter/models/member.dart';
 import 'package:contri_buter/models/transaction.dart';
 import 'package:contri_buter/models/user.dart';
 import 'package:contri_buter/providers/user_provider.dart';
 import 'package:contri_buter/utils.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -42,7 +42,9 @@ class SplitProvider extends ChangeNotifier {
         );
 
       myContacts = await FirebaseController.instance.getAppUsers(myPhoneNum);
-      myContacts.removeWhere((element) => element.phoneNumber == UserProvider.instance.user!.phoneNumber,);
+      myContacts.removeWhere(
+        (element) => element.phoneNumber == UserProvider.instance.user!.phoneNumber,
+      );
     } else {
       logError(str: 'Not Allowed');
     }
@@ -175,45 +177,63 @@ class SplitProvider extends ChangeNotifier {
 
   void _save() async {
     // Create a map for contributors and unpaid participants
-    Map<String, dynamic> contributors = {};
-    Map<String, dynamic> unpaidParticipants = {};
+    Map<String, dynamic> members = {};
+
+    selectedContacts.forEach(
+      (contact) {
+        members[contact.phoneNumber] = Members(
+                id: contact.phoneNumber,
+                displayName: contact.userName,
+                amount:
+                    (double.parse(billAmount) / (selectedContacts.length + 1)).toStringAsFixed(2),
+                profileImage: contact.profileImage,
+                isPaid: false)
+            .toJson();
+      },
+    );
+
+    members[UserProvider.instance.user!.phoneNumber] = Members(
+        id: UserProvider.instance.user!.phoneNumber,
+        displayName: UserProvider.instance.user!.userName,
+        amount: (double.parse(billAmount) / (selectedContacts.length + 1)).toStringAsFixed(2),
+        profileImage: UserProvider.instance.user!.profileImage,
+        isPaid: true).toJson();
 
     // Calculate the contributors' map
-    for (var contact in payers) {
-      String phoneNumber = contact.phoneNumber;
-
-      // Get the contribution from the controller or use amountPerPayer if it's 0.00 or empty
-      String controllerText = _contributionControllers[contact]?.text ?? '0.00';
-      double contribution = double.tryParse(controllerText) ?? amountPerPayer;
-
-      contributors[phoneNumber] = {
-        'amount': contribution.toStringAsFixed(2),
-        'name': contact.userName,
-        'profile_picture': contact.profileImage,
-      };
-    }
+    // for (var contact in payers) {
+    //   String phoneNumber = contact.phoneNumber;
+    //
+    //   // Get the contribution from the controller or use amountPerPayer if it's 0.00 or empty
+    //   String controllerText = _contributionControllers[contact]?.text ?? '0.00';
+    //   double contribution = double.tryParse(controllerText) ?? amountPerPayer;
+    //
+    // // 'amount': contribution.toStringAsFixed(2),
+    // // 'name': contact.userName,
+    // // 'profile_picture': contact.profileImage,
+    //   contributors[phoneNumber] = Members(id: phoneNumber, amount: contribution.toStringAsFixed(2), profileImage: contact.profileImage, isPaid: false);
+    // }
 
     // Calculate the unpaid participants' map (those who are not payers)
-    for (var contact in selectedContacts) {
-      if (!payers.contains(contact)) {
-        String phoneNumber = contact.phoneNumber;
-        unpaidParticipants[phoneNumber] = {
-          'amount': '0.00',
-          'name': contact.userName,
-          'profile_picture': contact.profileImage,
-        };
-      }
-    }
+    // for (var contact in selectedContacts) {
+    //   if (!payers.contains(contact)) {
+    //     String phoneNumber = contact.phoneNumber;
+    //     contributors[phoneNumber] = {
+    //       'amount': '0.00',
+    //       'name': contact.userName,
+    //       'profile_picture': contact.profileImage,
+    //     };
+    //   }
+    // }
 
     // Creating the TransactionModel with the new structure
     TransactionModel transactionModel = TransactionModel(
       id: '-1',
-      createdBy: FirebaseAuth.instance.currentUser!.phoneNumber.toString(),
+      createdBy: UserProvider.instance.user!,
       title: billName,
       amount: double.parse(billAmount),
       category: billCategory,
-      contributors: contributors, // Use the newly created contributors map
-      unpaidParticipants: unpaidParticipants, // Use the newly created unpaid participants map
+      members: members, // Use the newly created contributors map
+      //unpaidParticipants: unpaidParticipants, // Use the newly created unpaid participants map
       dateTime: DateTime.now(),
     );
 

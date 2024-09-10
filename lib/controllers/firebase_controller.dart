@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:contri_buter/models/subscription.dart';
 import 'package:contri_buter/models/transaction.dart';
 import 'package:contri_buter/models/user.dart';
+import 'package:contri_buter/providers/user_provider.dart';
 import 'package:contri_buter/utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -50,6 +51,17 @@ class FirebaseController {
       print('Error fetching transactions: $error');
     }
     return _transactions;
+  }
+
+  Future<void> updateTransaction(TransactionModel transaction, bool isPaid) async {
+    try {
+      await transactionCollection.doc(transaction.id).update({
+        'contributors.${UserProvider.instance.user!.phoneNumber}.isPaid': !isPaid
+      });
+      logEvent(str: 'done');
+    } catch (e) {
+      logError(str: 'ERROR : ${e}');
+    }
   }
 
   Future<void> saveSubscription(Subscription subscription) async => await subscriptionCollection
