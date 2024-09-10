@@ -24,12 +24,15 @@ class FirebaseController {
   
   Future<List<UserModel>> getAppUsers(List<String> phNos) async {
     List<UserModel> users = [];
-
-    phNos.forEach((element) => logEvent(str: element),);
     try {
-      final response = (await userCollection.where('phone_number',whereIn: phNos).get()).docs;
-      for (var json in response) users.add(UserModel.fromJson(json.data() as Map<String,dynamic>));
-
+      // Split the phone numbers into chunks of 30
+      for (var i = 0; i < phNos.length; i += 30) {
+        var chunk = phNos.sublist(i, i + 30 > phNos.length ? phNos.length : i + 30);
+        final response = (await userCollection.where('phone_number', whereIn: chunk).get()).docs;
+        for (var json in response) {
+          users.add(UserModel.fromJson(json.data() as Map<String, dynamic>));
+        }
+      }
     } catch (e) {
       logError(str: 'Error $e');
     }

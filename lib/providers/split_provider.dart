@@ -43,7 +43,8 @@ class SplitProvider extends ChangeNotifier {
 
       myContacts = await FirebaseController.instance.getAppUsers(myPhoneNum);
       myContacts.removeWhere(
-        (element) => element.phoneNumber == UserProvider.instance.user!.phoneNumber,
+        (element) =>
+            element.phoneNumber == UserProvider.instance.user!.phoneNumber,
       );
     } else {
       logError(str: 'Not Allowed');
@@ -102,7 +103,8 @@ class SplitProvider extends ChangeNotifier {
     amountPerPayer = double.parse(billAmount) / payers.length;
 
     for (var contact in payers) {
-      _contributionControllers[contact]?.text = amountPerPayer.toStringAsFixed(2);
+      _contributionControllers[contact]?.text =
+          amountPerPayer.toStringAsFixed(2);
     }
   }
 
@@ -120,10 +122,12 @@ class SplitProvider extends ChangeNotifier {
     int remainingPayers = payers.length - 1;
 
     if (remainingPayers > 0) {
-      amountPerPayer = remainingAmount / remainingPayers; // Update the amountPerPayer
+      amountPerPayer =
+          remainingAmount / remainingPayers; // Update the amountPerPayer
       for (var contact in payers) {
         if (contact != editedContact) {
-          _contributionControllers[contact]?.text = amountPerPayer.toStringAsFixed(2);
+          _contributionControllers[contact]?.text =
+              amountPerPayer.toStringAsFixed(2);
         }
       }
     }
@@ -185,7 +189,8 @@ class SplitProvider extends ChangeNotifier {
                 id: contact.phoneNumber,
                 displayName: contact.userName,
                 amount:
-                    (double.parse(billAmount) / (selectedContacts.length + 1)).toStringAsFixed(2),
+                    (double.parse(billAmount) / (selectedContacts.length + 1))
+                        .toStringAsFixed(2),
                 profileImage: contact.profileImage,
                 isPaid: false)
             .toJson();
@@ -193,11 +198,13 @@ class SplitProvider extends ChangeNotifier {
     );
 
     members[UserProvider.instance.user!.phoneNumber] = Members(
-        id: UserProvider.instance.user!.phoneNumber,
-        displayName: UserProvider.instance.user!.userName,
-        amount: (double.parse(billAmount) / (selectedContacts.length + 1)).toStringAsFixed(2),
-        profileImage: UserProvider.instance.user!.profileImage,
-        isPaid: true).toJson();
+            id: UserProvider.instance.user!.phoneNumber,
+            displayName: UserProvider.instance.user!.userName,
+            amount: (double.parse(billAmount) / (selectedContacts.length + 1))
+                .toStringAsFixed(2),
+            profileImage: UserProvider.instance.user!.profileImage,
+            isPaid: true)
+        .toJson();
 
     // Calculate the contributors' map
     // for (var contact in payers) {
