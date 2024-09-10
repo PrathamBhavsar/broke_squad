@@ -246,6 +246,7 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
                 .copyWith(fontSize: 14.sp),
           ),
         ),
+        spaceH10(),
         CreateBillViewTextField(
           textController: _billNameController,
           focusNode: _billNameFocusNode,
@@ -260,6 +261,7 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
                 .copyWith(fontSize: 14.sp),
           ),
         ),
+        spaceH10(),
         CreateBillViewTextField(
           textController: _amountController,
           focusNode: _amountFocusNode,

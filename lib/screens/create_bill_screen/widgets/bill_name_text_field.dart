@@ -1,12 +1,14 @@
 import 'package:contri_buter/constants/UI.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 class CreateBillViewTextField extends StatelessWidget {
   const CreateBillViewTextField({
     super.key,
     required this.textController,
     required this.focusNode,
-    this.hintText, this.keyboardType,
+    this.hintText,
+    this.keyboardType,
   });
 
   final TextEditingController textController;
@@ -21,8 +23,9 @@ class CreateBillViewTextField extends StatelessWidget {
       controller: textController,
       focusNode: focusNode,
       cursorColor: AppColors.grey,
-      keyboardType:keyboardType,
+      keyboardType: keyboardType,
       decoration: InputDecoration(
+        contentPadding: EdgeInsets.only(left: 20),
         hintText: hintText,
         hintStyle: AppTextStyles.kCreateBillTextFieldTextStyle,
         focusColor: AppColors.grey,

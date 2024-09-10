@@ -67,6 +67,7 @@ class BarChartWidget extends StatelessWidget {
         BarChartData(
           barGroups: barGroups,
           titlesData: FlTitlesData(
+            topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
             bottomTitles: AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,
@@ -80,9 +81,11 @@ class BarChartWidget extends StatelessWidget {
               sideTitles: SideTitles(showTitles: false),
             ),
           ),
-          gridData: FlGridData(show: false),
+          gridData: FlGridData(show: true),
           borderData: FlBorderData(show: false),
         ),
+        swapAnimationCurve: Curves.easeInOut,
+        swapAnimationDuration: Duration(milliseconds: 150),
       ),
     );
   }
