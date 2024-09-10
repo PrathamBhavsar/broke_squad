@@ -160,15 +160,16 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
         spaceH20(),
         splitProvider.displayContacts.isEmpty
             ? ElevatedButton(
-                onPressed: () async =>
-                    await FlutterContacts.openExternalInsert().whenComplete(
-                      () async => await splitProvider.getContact(),
-                    ),
-                child: Text(
-                  'Add Contact',
-                  style: AppTextStyles.poppins.copyWith(
-                      color: AppColors.grey, fontWeight: FontWeight.w500),
-                ))
+                    onPressed: () async =>
+                        await FlutterContacts.openExternalInsert().whenComplete(
+                          () async => await splitProvider.getContact(),
+                        ),
+                    child: Text(
+                      'Add Contact',
+                      style: AppTextStyles.poppins.copyWith(
+                          color: AppColors.grey, fontWeight: FontWeight.w500),
+                    ))
+              ])
             : Flexible(
                 child: SizedBox(
                   height: getHeight(context),
