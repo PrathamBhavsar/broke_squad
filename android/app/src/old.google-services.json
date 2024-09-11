@@ -23,25 +23,6 @@
           "other_platform_oauth_client": []
         }
       }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:696603128386:android:347ba1c7477e5ba7c1b3db",
-        "android_client_info": {
-          "package_name": "com.up.brokesquad"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyAiZ3cZ00K5GKc3YS4AHFwHZdWckZZQ5ZQ"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
     }
   ],
   "configuration_version": "1"
