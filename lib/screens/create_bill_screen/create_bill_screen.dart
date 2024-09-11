@@ -168,8 +168,7 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
                       'Add Contact',
                       style: AppTextStyles.poppins.copyWith(
                           color: AppColors.grey, fontWeight: FontWeight.w500),
-                    ))
-              ])
+                    )
             : Flexible(
                 child: SizedBox(
                   height: getHeight(context),
