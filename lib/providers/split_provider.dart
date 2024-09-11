@@ -1,3 +1,4 @@
+import 'package:contri_buter/controllers/admob.dart';
 import 'package:contri_buter/controllers/firebase_controller.dart';
 import 'package:contri_buter/models/member.dart';
 import 'package:contri_buter/models/transaction.dart';
@@ -149,7 +150,7 @@ class SplitProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void manageContinue(BuildContext context, [Function? setParams]) {
+  void manageContinue(BuildContext context, [Function? setParams]) async {
     if (currentIndex == 0) {
       if (selectedContacts.isEmpty) {
         Fluttertoast.showToast(msg: 'Add People to Continue');
@@ -170,6 +171,7 @@ class SplitProvider extends ChangeNotifier {
       _save();
       Fluttertoast.showToast(msg: 'Transaction Created!');
       Navigator.pop(context);
+      await AdMob.instance.showInterstitialAd();
     }
     notifyListeners();
   }

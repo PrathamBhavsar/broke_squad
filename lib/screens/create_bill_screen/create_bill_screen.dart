@@ -1,4 +1,5 @@
 import 'package:contri_buter/constants/UI.dart';
+import 'package:contri_buter/controllers/admob.dart';
 import 'package:contri_buter/models/user.dart';
 import 'package:contri_buter/providers/split_provider.dart';
 import 'package:contri_buter/screens/create_bill_screen/widgets/avatar_indicator.dart';
@@ -43,6 +44,7 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
   @override
   void didChangeDependencies() async {
     await Future.delayed(Duration(milliseconds: 200));
+    await AdMob.instance.createInterstitialAd();
     SplitProvider.instance.getContact();
     super.didChangeDependencies();
   }
