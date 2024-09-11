@@ -68,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
           future: _userFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return CircularProgressIndicator();
+              return Container();
             } else if (snapshot.hasError) {
               return Icon(Icons.error);
             } else {
