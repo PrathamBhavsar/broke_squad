@@ -13,6 +13,29 @@ class AppbarWidget extends StatefulWidget {
 }
 
 class _AppbarWidgetState extends State<AppbarWidget> {
+  String? _profileImageUrl;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchProfileImage();
+  }
+
+  Future<void> _fetchProfileImage() async {
+    try {
+      final profileImageUrl = await UserProvider.instance.getProfileImage();
+      setState(() {
+        _profileImageUrl = profileImageUrl;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -20,11 +43,8 @@ class _AppbarWidgetState extends State<AppbarWidget> {
       children: [
         InkWell(
           onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) => ProfileScreen(),)),
-          child: FutureBuilder<String?>(
-            future: UserProvider.instance.getProfileImage(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Shimmer.fromColors(
+          child: _isLoading
+              ? Shimmer.fromColors(
                   baseColor: Colors.grey[300]!,
                   highlightColor: Colors.grey[100]!,
                   child: ClipOval(
@@ -34,23 +54,15 @@ class _AppbarWidgetState extends State<AppbarWidget> {
                       color: Colors.white,
                     ),
                   ),
-                );
-              } else if (snapshot.hasError) {
-                return Icon(Icons.error);
-              } else if (snapshot.hasData) {
-                final profileImageUrl = snapshot.data;
-                return ClipOval(
-                    child: CachedNetworkImage(
-                  imageUrl: profileImageUrl ??
-                      "https://firebasestorage.googleapis.com/v0/b/fitmotive-9564c.appspot.com/o/user-icon-on-transparent-background-free-png.webp?alt=media&token=60700768-4bc0-4883-9c4d-104e23fad732",
-                  width: 50,
-                  fit: BoxFit.cover,
-                ));
-              } else {
-                return Icon(Icons.account_circle, size: 40);
-              }
-            },
-          ),
+                )
+              : ClipOval(
+                  child: CachedNetworkImage(
+                    imageUrl: _profileImageUrl ??
+                        "https://firebasestorage.googleapis.com/v0/b/fitmotive-9564c.appspot.com/o/user-icon-on-transparent-background-free-png.webp?alt=media&token=60700768-4bc0-4883-9c4d-104e23fad732",
+                    width: 50,
+                    fit: BoxFit.cover,
+                  ),
+                ),
         ),
       ],
     );

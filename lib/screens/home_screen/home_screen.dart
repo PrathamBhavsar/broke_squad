@@ -18,11 +18,14 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   String _selectedGroup = 'All'; // Manage selected group state
+  late Future<void> _userFuture;
   late Future<List<TransactionModel>> _transactionsFuture;
 
   @override
   void initState() {
     super.initState();
+    // Initialize the future to fetch user data
+    _userFuture = UserProvider.instance.getUser();
     // Initialize the future to fetch transactions
     _transactionsFuture = _fetchTransactions();
   }
@@ -37,12 +40,6 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _transactionsFuture = _fetchTransactions();
     });
-  }
-
-  @override
-  void didChangeDependencies() async {
-    await UserProvider.instance.getUser();
-    super.didChangeDependencies();
   }
 
   @override
@@ -67,7 +64,18 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: AppbarWidget(),
+        title: FutureBuilder<void>(
+          future: _userFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator();
+            } else if (snapshot.hasError) {
+              return Icon(Icons.error);
+            } else {
+              return AppbarWidget();
+            }
+          },
+        ),
       ),
       body: RefreshIndicator(
         onRefresh: _refreshTransactions, // Set the refresh callback
