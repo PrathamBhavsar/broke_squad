@@ -171,7 +171,10 @@ class SplitProvider extends ChangeNotifier {
       _save();
       Fluttertoast.showToast(msg: 'Transaction Created!');
       Navigator.pop(context);
-      await AdMob.instance.showInterstitialAd();
+      await AdMob.instance.showInterstitialAd().then((_) {
+        // Ensure the state is updated after the ad is closed
+        notifyListeners();
+      });
     }
     notifyListeners();
   }
@@ -208,32 +211,6 @@ class SplitProvider extends ChangeNotifier {
             isPaid: true)
         .toJson();
 
-    // Calculate the contributors' map
-    // for (var contact in payers) {
-    //   String phoneNumber = contact.phoneNumber;
-    //
-    //   // Get the contribution from the controller or use amountPerPayer if it's 0.00 or empty
-    //   String controllerText = _contributionControllers[contact]?.text ?? '0.00';
-    //   double contribution = double.tryParse(controllerText) ?? amountPerPayer;
-    //
-    // // 'amount': contribution.toStringAsFixed(2),
-    // // 'name': contact.userName,
-    // // 'profile_picture': contact.profileImage,
-    //   contributors[phoneNumber] = Members(id: phoneNumber, amount: contribution.toStringAsFixed(2), profileImage: contact.profileImage, isPaid: false);
-    // }
-
-    // Calculate the unpaid participants' map (those who are not payers)
-    // for (var contact in selectedContacts) {
-    //   if (!payers.contains(contact)) {
-    //     String phoneNumber = contact.phoneNumber;
-    //     contributors[phoneNumber] = {
-    //       'amount': '0.00',
-    //       'name': contact.userName,
-    //       'profile_picture': contact.profileImage,
-    //     };
-    //   }
-    // }
-
     // Creating the TransactionModel with the new structure
     TransactionModel transactionModel = TransactionModel(
       id: '-1',
@@ -242,13 +219,13 @@ class SplitProvider extends ChangeNotifier {
       amount: double.parse(billAmount),
       category: billCategory,
       members: members, // Use the newly created contributors map
-      //unpaidParticipants: unpaidParticipants, // Use the newly created unpaid participants map
       dateTime: DateTime.now(),
     );
 
     // Log the event and save the transaction
-    logEvent(str: "${transactionModel.toJson()}");
+    logEvent(str: "Saving transaction: ${transactionModel.toJson()}");
     await FirebaseController.instance.saveTransaction(transactionModel);
+    logEvent(str: "Transaction saved successfully");
   }
 
   onDispose() {
