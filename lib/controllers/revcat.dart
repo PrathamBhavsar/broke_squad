@@ -5,7 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
 abstract class RevCat {
-  static String apiKey = '';
+  static String apiKey = 'goog_szLFYfxXnQubefigScrUjpeguCR';
 
   static Future<void> initSDK() async => await Purchases.configure(PurchasesConfiguration(apiKey));
 

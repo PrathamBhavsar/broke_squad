@@ -2,7 +2,8 @@ import 'package:contri_buter/utils.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class AdMob {
-  static const String interstitialAdUnitId = "ca-app-pub-2937476914243605/8353069752";
+  static const String interstitialAdUnitId =
+      "ca-app-pub-2937476914243605/8353069752";
   static final AdMob instance = AdMob._();
   AdMob._();
   InterstitialAd? interstitialAd;
@@ -33,10 +34,11 @@ class AdMob {
         logEvent(str: 'Showing...');
       },
       onAdDismissedFullScreenContent: (ad) => logEvent(str: 'Dismissed...'),
-      onAdFailedToShowFullScreenContent: (ad, error) => logError(str: error.toString()),
+      onAdFailedToShowFullScreenContent: (ad, error) =>
+          logError(str: error.toString()),
       onAdClicked: (ad) => logEvent(str: 'clicked!...'),
     );
     await interstitialAd!.show();
-    interstitialAd= null;
+    // interstitialAd= null;
   }
 }
