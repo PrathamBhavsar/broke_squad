@@ -6,6 +6,11 @@
         android:label="BrokeSquad"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        <!--            AdMob-->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-2937476914243605~8556287727"
+            />
         <activity
             android:name=".MainActivity"
             android:exported="true"
