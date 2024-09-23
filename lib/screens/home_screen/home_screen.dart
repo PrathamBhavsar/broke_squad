@@ -92,7 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 return Center(
                   child: Text('Error fetching transactions'),
                 );
-              } else if (snapshot.hasData) {
+              } else if (snapshot.hasData && snapshot.data != null) {
                 final transactions = snapshot.data!;
 
                 return Column(

@@ -1,4 +1,5 @@
 import 'package:contri_buter/constants/UI.dart';
+import 'package:contri_buter/controllers/admob.dart';
 import 'package:contri_buter/models/user.dart';
 import 'package:contri_buter/providers/split_provider.dart';
 import 'package:contri_buter/screens/create_bill_screen/widgets/avatar_indicator.dart';
@@ -43,6 +44,7 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
   @override
   void didChangeDependencies() async {
     await Future.delayed(Duration(milliseconds: 200));
+    await AdMob.instance.createInterstitialAd();
     SplitProvider.instance.getContact();
     super.didChangeDependencies();
   }
@@ -91,20 +93,13 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
               if (splitProvider.currentIndex == 0) {
                 splitProvider.manageContinue(context);
               } else if (splitProvider.currentIndex == 2) {
-                splitProvider.payers.forEach((payer) {
-                  String contribution =
-                      _contributionControllers[payer]?.text ?? '0';
+               
 
                   // If the contribution is empty or zero, use the calculated amount per payer
-                  if (contribution.isEmpty || contribution == '0') {
-                    double amountPerPayer = splitProvider
-                        .amountPerPayer; // Assuming you have a method to calculate this
-                    contribution = amountPerPayer.toStringAsFixed(2);
-                  }
+                 
                   splitProvider.manageContinue(context);
 
-                  print('${payer.userName} contributed $contribution');
-                });
+                
               } else if (splitProvider.currentIndex == 1) {
                 splitProvider.manageContinue(context, () {
                   if (validateBillData()) {
@@ -115,9 +110,7 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
                     }
                   }
                 });
-              } else {
-                splitProvider.manageContinue(context);
-              }
+              } 
             },
           ),
         );
