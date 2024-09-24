@@ -147,8 +147,8 @@ class _TransactionFilterWidgetState extends State<TransactionFilterWidget> {
             itemBuilder: (context, index) {
               final transaction = widget.transactions[index];
               bool isPaid = transaction.members[
-                              '${UserProvider.instance.user!.phoneNumber}'] !=
-                          null
+                          '${UserProvider.instance.user!.phoneNumber}'] !=
+                      null
                   ? transaction
                           .members['${UserProvider.instance.user!.phoneNumber}']
                       ['isPaid']
