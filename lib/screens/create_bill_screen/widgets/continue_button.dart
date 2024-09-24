@@ -35,3 +35,41 @@ class ContinueButton extends StatelessWidget {
     );
   }
 }
+
+class CustomButton extends StatelessWidget {
+  const CustomButton({
+    super.key,
+    required this.onPressed,
+    required this.label,
+    required this.backgroundColor,
+  });
+  final String label;
+  final Color backgroundColor;
+  final Function() onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(left: 12, right: 12, bottom: 12),
+      child: SizedBox(
+        height: 50.h,
+        width: MediaQuery.sizeOf(context).width,
+        child: ElevatedButton(
+            style: ButtonStyle(
+                shape: WidgetStatePropertyAll(
+                  RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24.r)),
+                ),
+                backgroundColor: WidgetStatePropertyAll(backgroundColor)),
+            onPressed: onPressed,
+            child: Text(
+              label,
+              style: AppTextStyles.poppins.copyWith(
+                  fontSize: 18.sp,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600),
+            )),
+      ),
+    );
+  }
+}

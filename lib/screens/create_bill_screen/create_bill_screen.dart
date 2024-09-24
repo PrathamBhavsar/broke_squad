@@ -167,38 +167,59 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
                   height: getHeight(context),
                   child: ListView.builder(
                     itemBuilder: (context, index) {
-                      return ListTile(
-                        leading: ContactCircleAvatar(
+                      return GestureDetector(
+                        onTap: () {
+                          // Check if the contact is already selected
+                          final contact = splitProvider.displayContacts[index];
+                          if (splitProvider.selectedContacts
+                              .contains(contact)) {
+                            splitProvider.removeContact(contact);
+                          } else {
+                            splitProvider.addContact(contact);
+                          }
+                          setState(
+                              () {}); // Update the state to reflect the change
+                        },
+                        child: ListTile(
+                          leading: ContactCircleAvatar(
                             isFirebaseContact: splitProvider.firebaseContacts
                                 .any((firebaseContact) =>
                                     firebaseContact.phoneNumber ==
                                     splitProvider
                                         .displayContacts[index].phoneNumber),
-                            contact: splitProvider.displayContacts[index]),
-                        title: Text(
-                          splitProvider.displayContacts[index].userName,
-                          style: AppTextStyles.kCreateBillAppBarTitleTextStyle
-                              .copyWith(fontSize: 13.sp),
-                        ),
-                        subtitle: Text(
+                            contact: splitProvider.displayContacts[index],
+                          ),
+                          title: Text(
+                            splitProvider.displayContacts[index].userName,
+                            style: AppTextStyles.kCreateBillAppBarTitleTextStyle
+                                .copyWith(fontSize: 13.sp),
+                          ),
+                          subtitle: Text(
                             splitProvider.displayContacts[index].phoneNumber,
                             style: AppTextStyles.kCreateBillAppBarTitleTextStyle
                                 .copyWith(
                                     fontSize: 12.sp,
-                                    fontWeight: FontWeight.w500)),
-                        trailing: Checkbox(
-                          value: splitProvider.selectedContacts.isNotEmpty
-                              ? splitProvider.selectedContacts.contains(
-                                  splitProvider.displayContacts[index])
-                              : false,
-                          onChanged: (value) => setState(() => value != null
-                              ? (!value
-                                  ? splitProvider.removeContact(
-                                      splitProvider.displayContacts[index])
-                                  : splitProvider.addContact(
-                                      splitProvider.displayContacts[index]))
-                              : null),
-                          shape: CircleBorder(),
+                                    fontWeight: FontWeight.w500),
+                          ),
+                          trailing: Checkbox(
+                            value: splitProvider.selectedContacts
+                                .contains(splitProvider.displayContacts[index]),
+                            onChanged: (value) {
+                              // This will allow the checkbox to be updated separately
+                              if (value != null) {
+                                if (value) {
+                                  splitProvider.addContact(
+                                      splitProvider.displayContacts[index]);
+                                } else {
+                                  splitProvider.removeContact(
+                                      splitProvider.displayContacts[index]);
+                                }
+                                setState(
+                                    () {}); // Update the state to reflect the change
+                              }
+                            },
+                            shape: CircleBorder(),
+                          ),
                         ),
                       );
                     },

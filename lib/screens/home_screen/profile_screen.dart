@@ -13,6 +13,8 @@ import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
+import '../create_bill_screen/widgets/continue_button.dart';
+
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
@@ -35,7 +37,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       isActive: false);
 
   _startInAppPurchase() async {
-    PaywallResult result = await RevenueCatUI.presentPaywall(displayCloseButton: true);
+    PaywallResult result =
+        await RevenueCatUI.presentPaywall(displayCloseButton: true);
     if (result == PaywallResult.purchased)
       await RevCat.onSuccess();
     else if (result == PaywallResult.error)
@@ -52,7 +55,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    subscription.isActive  = false;
+    subscription.isActive = false;
     return Scaffold(
       backgroundColor: AppColors.kAuthTextFieldColor,
       appBar: AppBar(
@@ -66,7 +69,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               FutureBuilder<String?>(
                 future: UserProvider.instance.getProfileImage(),
                 builder: (context, snapshot) {
-
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Shimmer.fromColors(
                       baseColor: Colors.grey[300]!,
@@ -89,15 +91,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             "https://firebasestorage.googleapis.com/v0/b/fitmotive-9564c.appspot.com/o/user-icon-on-transparent-background-free-png.webp?alt=media&token=60700768-4bc0-4883-9c4d-104e23fad732",
                         width: getWidth(context) * 0.4,
                         fit: BoxFit.cover,
-                        progressIndicatorBuilder: (context, url, progress) => Container(
-                            width: getWidth(context) * 0.4,
-                            height: getWidth(context) * 0.4,
-                            decoration: BoxDecoration(shape: BoxShape.circle),
-                            child: LinearProgressIndicator(
-                              backgroundColor: AppColors.lightGrey,
-                              color: AppColors.grey,
-                              value: progress.progress,
-                            )),
+                        progressIndicatorBuilder: (context, url, progress) =>
+                            Container(
+                                width: getWidth(context) * 0.4,
+                                height: getWidth(context) * 0.4,
+                                decoration:
+                                    BoxDecoration(shape: BoxShape.circle),
+                                child: LinearProgressIndicator(
+                                  backgroundColor: AppColors.lightGrey,
+                                  color: AppColors.grey,
+                                  value: progress.progress,
+                                )),
                       ),
                     );
                   } else {
@@ -121,71 +125,43 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     width: 10,
                   ),
                   Text(
-                    UserProvider.instance.user == null ? "" : UserProvider.instance.user!.userName,
+                    UserProvider.instance.user == null
+                        ? ""
+                        : UserProvider.instance.user!.userName,
                     style: AppTextStyles.kOnboardingTitleTextStyle,
                   ),
                 ],
               ),
               spaceH20(),
               Card(
-                color: AppColors.kPrimaryColor ,
+                color: AppColors.kPrimaryColor,
                 elevation: 1.2,
-
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),
-                  child: subscription.isActive ? _buildSubscribedCard() : _buildNotSubscribedCard(),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 12.0, vertical: 12.0),
+                  child: subscription.isActive
+                      ? _buildSubscribedCard()
+                      : _buildNotSubscribedCard(),
                 ),
               ),
               Spacer(),
-              Row(
-                children: [
-                  Expanded(
-                    child: SizedBox(
-                      height: 50,
-                      child: ElevatedButton(
-                        onPressed: !subscription.isActive
-                            ? _startInAppPurchase
-                            : () => {
-                                  _launchMyUrl(
-                                      'https://play.google.com/store/account/subscriptions')
-                                },
-                        style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
-                          backgroundColor: AppColors.kDarkColor,
-                        ),
-                        child: Text(
-                          !subscription.isActive ? 'Get Subscription' : 'Manage Subscription',
-                          style: AppTextStyles.poppins.copyWith(
-                              color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+              CustomButton(
+                backgroundColor: AppColors.kDarkColor,
+                label: !subscription.isActive
+                    ? 'Get Subscription'
+                    : 'Manage Subscription',
+                onPressed: !subscription.isActive
+                    ? _startInAppPurchase
+                    : () => {
+                          _launchMyUrl(
+                              'https://play.google.com/store/account/subscriptions')
+                        },
               ),
-              spaceH20(),
-              Row(
-                children: [
-                  Expanded(
-                    child: SizedBox(
-                      height: 50,
-                      child: ElevatedButton(
-                        onPressed: () => AuthProvider.instance.logout(context),
-                        style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
-                          backgroundColor: AppColors.kPrimaryColor,
-                        ),
-                        child: Text(
-                          'Sign Out',
-                          style: AppTextStyles.poppins.copyWith(
-                              color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+              CustomButton(
+                backgroundColor: AppColors.kPrimaryColor,
+                label: 'Sign Out',
+                onPressed: () => AuthProvider.instance.logout(context),
               ),
-              spaceH20(),
             ],
           ),
         ),
@@ -198,7 +174,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           Text(
             'You Are Pro!',
-            style: AppTextStyles.kProfileScreenTextStyle.copyWith(fontSize: 22.sp),
+            style:
+                AppTextStyles.kProfileScreenTextStyle.copyWith(fontSize: 22.sp),
           ),
           spaceH10(),
           Row(
@@ -208,7 +185,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               RichText(
                 text: TextSpan(
                   children: [
-                    TextSpan(text: 'Monthly Plan\n', style: AppTextStyles.kProfileScreenTextStyle),
+                    TextSpan(
+                        text: 'Monthly Plan\n',
+                        style: AppTextStyles.kProfileScreenTextStyle),
                     TextSpan(
                         text:
                             'Expire on: ${subscription.expireAt.day}, ${DateFormat('MMMM').format(subscription.expireAt)}',
@@ -218,11 +197,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               ElevatedButton(
                 onPressed: subscription.isActive
-                    ? () => _launchMyUrl('https://play.google.com/store/account/subscriptions')
+                    ? () => _launchMyUrl(
+                        'https://play.google.com/store/account/subscriptions')
                     : _startInAppPurchase(),
                 child: Text(
                   subscription.isActive ? 'Manage' : 'Explore',
-                  style: AppTextStyles.kProfileScreenTextStyle.copyWith(fontSize: 12.sp),
+                  style: AppTextStyles.kProfileScreenTextStyle
+                      .copyWith(fontSize: 12.sp),
                 ),
                 style: ButtonStyle(
                   elevation: WidgetStatePropertyAll(1.5),
