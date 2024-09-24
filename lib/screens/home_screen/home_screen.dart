@@ -46,6 +46,10 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: AppbarWidget(),
+        forceMaterialTransparency: true,
+      ),
       floatingActionButton: FloatingActionButton(
         shape: CircleBorder(),
         child: Icon(
@@ -86,8 +90,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       padding: EdgeInsets.fromLTRB(12, 22, 12, 0),
                       child: Column(
                         children: [
-                          AppbarWidget(), // Appbar widget in SliverAppBar
-                          SizedBox(height: 10),
                           FutureBuilder<List<TransactionModel>>(
                             future: _transactionsFuture,
                             builder: (context, snapshot) {
@@ -121,7 +123,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: RefreshIndicator(
               onRefresh: _refreshTransactions,
               child: Padding(
-                padding: AppPaddings.scaffoldPadding,
+                padding: EdgeInsets.symmetric(horizontal: 12),
                 child: FutureBuilder<List<TransactionModel>>(
                   future: _transactionsFuture,
                   builder: (context, snapshot) {

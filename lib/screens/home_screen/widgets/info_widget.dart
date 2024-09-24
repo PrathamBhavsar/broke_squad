@@ -35,7 +35,7 @@ class InfoWidget extends StatelessWidget {
       height: containerHeight,
       width: containerWidth,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(25),
         border: Border.all(
           color: AppColors.accentColor,
           width: 2,
