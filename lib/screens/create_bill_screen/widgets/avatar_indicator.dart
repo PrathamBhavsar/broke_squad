@@ -12,10 +12,13 @@ class AvatarIndicator extends StatelessWidget {
     super.key,
     required this.context,
     required List<UserModel> selectedContacts,
+    required this.firebaseContacts, // Added Firebase contact list
   }) : _selectedContacts = selectedContacts;
 
   final BuildContext context;
   final List<UserModel> _selectedContacts;
+  final List<UserModel>
+      firebaseContacts; // Firebase contacts passed from provider
 
   @override
   Widget build(BuildContext context) {
@@ -30,18 +33,32 @@ class AvatarIndicator extends StatelessWidget {
         decoration: BoxDecoration(borderRadius: BorderRadius.circular(24.r)),
         child: _selectedContacts.isEmpty
             ? Padding(
-              padding: const EdgeInsets.all(2.0),
-              child: Text('Select Contacts',style: AppTextStyles.poppins.copyWith(color: AppColors.grey,fontWeight: FontWeight.bold),),
-            )
+                padding: const EdgeInsets.all(2.0),
+                child: Text(
+                  'Select Contacts',
+                  style: AppTextStyles.poppins.copyWith(
+                    color: AppColors.grey,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              )
             : Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   for (int i = 0;
-                      i < (_selectedContacts.length < 5 ? _selectedContacts.length : 5);
+                      i <
+                          (_selectedContacts.length < 5
+                              ? _selectedContacts.length
+                              : 5);
                       i++)
                     Padding(
                       padding: const EdgeInsets.all(2.0),
-                      child: ContactCircleAvatar(contact: _selectedContacts[i]),
+                      child: ContactCircleAvatar(
+                        contact: _selectedContacts[i],
+                        isFirebaseContact: firebaseContacts.contains(
+                          _selectedContacts[i],
+                        ), // Determine if the contact is from Firebase
+                      ),
                     ),
                   if (_selectedContacts.length > 5) ...[
                     SizedBox(

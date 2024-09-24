@@ -8,11 +8,14 @@ import 'package:contri_buter/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 
 class SplitProvider extends ChangeNotifier {
   List<UserModel> allContacts = [];
   List<UserModel> displayContacts = [];
   List<UserModel> selectedContacts = [];
+  List<UserModel> firebaseContacts = [];
+
   String billName = '';
   String billAmount = '';
   String billCategory = '';
@@ -27,13 +30,15 @@ class SplitProvider extends ChangeNotifier {
 
   Future<void> getContact() async {
     List<String> myPhoneNum = [];
+    List<UserModel> allPhoneContacts = [];
 
-    List<UserModel> myContacts = [];
     bool check = await FlutterContacts.requestPermission();
 
     if (check) {
       final contacts = await FlutterContacts.getContacts(withProperties: true);
-      if (contacts.isNotEmpty)
+
+      if (contacts.isNotEmpty) {
+        // Get all contacts from the phone
         contacts.forEach(
           (contact) => contact.phones.forEach(
             (number) => myPhoneNum.add(
@@ -42,16 +47,42 @@ class SplitProvider extends ChangeNotifier {
           ),
         );
 
-      myContacts = await FirebaseController.instance.getAppUsers(myPhoneNum);
-      myContacts.removeWhere(
-        (element) =>
-            element.phoneNumber == UserProvider.instance.user!.phoneNumber,
-      );
+        // Convert phone contacts to UserModel (or similar) if you want consistency
+        allPhoneContacts = contacts.map((contact) {
+          return UserModel(
+            id: '',
+            createdAt: DateFormat('EEEE, MMM d, y').format(DateTime.now()),
+            userName: contact.displayName,
+            profileImage: '', // Set default image or leave empty
+            phoneNumber: contact.phones.isNotEmpty
+                ? contact.phones.first.number.replaceAll(" ", '')
+                : '',
+          );
+        }).toList();
+
+        // Fetch only the users that are in the Firebase database
+        firebaseContacts =
+            await FirebaseController.instance.getAppUsers(myPhoneNum);
+
+        // Remove the current user from Firebase contacts
+        firebaseContacts.removeWhere(
+          (element) =>
+              element.phoneNumber == UserProvider.instance.user!.phoneNumber,
+        );
+
+        // Remove phone contacts that are also in Firebase contacts
+        allPhoneContacts.removeWhere((phoneContact) => firebaseContacts.any(
+            (firebaseContact) =>
+                firebaseContact.phoneNumber == phoneContact.phoneNumber));
+      }
+
+      // Combine Firebase contacts and phone contacts
+      allContacts = [...firebaseContacts, ...allPhoneContacts];
+      displayContacts = allContacts;
     } else {
-      logError(str: 'Not Allowed');
+      logError(str: 'Permission Not Allowed');
     }
-    allContacts = myContacts;
-    displayContacts = myContacts;
+
     notifyListeners();
   }
 

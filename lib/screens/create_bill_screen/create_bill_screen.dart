@@ -93,13 +93,9 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
               if (splitProvider.currentIndex == 0) {
                 splitProvider.manageContinue(context);
               } else if (splitProvider.currentIndex == 2) {
-               
+                // If the contribution is empty or zero, use the calculated amount per payer
 
-                  // If the contribution is empty or zero, use the calculated amount per payer
-                 
-                  splitProvider.manageContinue(context);
-
-                
+                splitProvider.manageContinue(context);
               } else if (splitProvider.currentIndex == 1) {
                 splitProvider.manageContinue(context, () {
                   if (validateBillData()) {
@@ -110,7 +106,7 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
                     }
                   }
                 });
-              } 
+              }
             },
           ),
         );
@@ -149,7 +145,11 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
         ),
         spaceH10(),
         AvatarIndicator(
-            context: context, selectedContacts: splitProvider.selectedContacts),
+          context: context,
+          selectedContacts: splitProvider.selectedContacts,
+          firebaseContacts:
+              splitProvider.firebaseContacts, // Pass the Firebase contacts here
+        ),
         spaceH20(),
         splitProvider.displayContacts.isEmpty
             ? ElevatedButton(
@@ -169,6 +169,11 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
                     itemBuilder: (context, index) {
                       return ListTile(
                         leading: ContactCircleAvatar(
+                            isFirebaseContact: splitProvider.firebaseContacts
+                                .any((firebaseContact) =>
+                                    firebaseContact.phoneNumber ==
+                                    splitProvider
+                                        .displayContacts[index].phoneNumber),
                             contact: splitProvider.displayContacts[index]),
                         title: Text(
                           splitProvider.displayContacts[index].userName,
@@ -205,20 +210,24 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
     );
   }
 
-  _buildBillData(SplitProvider provider) {
+  _buildBillData(SplitProvider splitProvider) {
     return Column(
       children: [
         spaceH10(),
         Stack(
           children: [
             AvatarIndicator(
-                context: context, selectedContacts: provider.selectedContacts),
+              context: context,
+              selectedContacts: splitProvider.selectedContacts,
+              firebaseContacts: splitProvider
+                  .firebaseContacts, // Pass the Firebase contacts here
+            ),
             Padding(
               padding: const EdgeInsets.all(4.0),
               child: Align(
                   alignment: Alignment.bottomRight,
                   child: FloatingActionButton(
-                    onPressed: () => provider.manageBack(context),
+                    onPressed: () => splitProvider.manageBack(context),
                     shape: CircleBorder(),
                     elevation: 0,
                     child: FaIcon(
@@ -267,10 +276,10 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
           children: [
             for (Category category in categories)
               InkWell(
-                onTap: () => provider.setBillCategory(category.toString()),
+                onTap: () => splitProvider.setBillCategory(category.toString()),
                 child: Chip(
                   color: WidgetStatePropertyAll(
-                      provider.billCategory == category.toString()
+                      splitProvider.billCategory == category.toString()
                           ? Colors.grey.shade400
                           : AppColors.lightGrey),
                   shape: RoundedRectangleBorder(
@@ -325,7 +334,13 @@ class _CreateBillScreenState extends State<CreateBillScreen> {
                   child: ListTile(
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadiusDirectional.circular(20)),
-                    leading: ContactCircleAvatar(contact: contact),
+                    leading: ContactCircleAvatar(
+                      contact: contact,
+                      isFirebaseContact: splitProvider.firebaseContacts.any(
+                          (firebaseContact) =>
+                              firebaseContact.phoneNumber ==
+                              splitProvider.displayContacts[index].phoneNumber),
+                    ),
                     title: Text(
                       contact.userName,
                       style: AppTextStyles.kCreateBillAppBarTitleTextStyle

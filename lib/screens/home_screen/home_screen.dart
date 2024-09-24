@@ -47,8 +47,20 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: AppbarWidget(),
         forceMaterialTransparency: true,
+        automaticallyImplyLeading: false,
+        title: FutureBuilder<void>(
+          future: _userFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Container();
+            } else if (snapshot.hasError) {
+              return Icon(Icons.error);
+            } else {
+              return AppbarWidget();
+            }
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         shape: CircleBorder(),

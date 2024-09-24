@@ -27,11 +27,8 @@ class TransactionFilterWidget extends StatefulWidget {
 class _TransactionFilterWidgetState extends State<TransactionFilterWidget> {
   @override
   Widget build(BuildContext context) {
-    print('Transactions: ${widget.transactions}');
-
     final Set<String> groupNames =
         widget.transactions.map((transaction) => transaction.category).toSet();
-    print('Group Names: $groupNames');
 
     _handleTap(TransactionModel transaction, bool isPaid) async {
       showDialog(
@@ -210,7 +207,10 @@ class MyTransactionTile extends StatelessWidget {
                       shape: BoxShape.circle),
                   width: 50.w,
                   height: 50.h,
-                  child: ContactCircleAvatar(contact: transaction.createdBy)),
+                  child: ContactCircleAvatar(
+                    contact: transaction.createdBy,
+                    isFirebaseContact: true,
+                  )),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
