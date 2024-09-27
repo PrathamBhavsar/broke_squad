@@ -25,6 +25,25 @@ class TransactionFilterWidget extends StatefulWidget {
 }
 
 class _TransactionFilterWidgetState extends State<TransactionFilterWidget> {
+  String formatDate(DateTime dateTime) {
+    String daySuffix = getDaySuffix(dateTime.day);
+    return '${dateTime.day}$daySuffix ${DateFormat('MMM').format(dateTime)}, ${dateTime.year}';
+  }
+
+  String getDaySuffix(int day) {
+    if (day >= 11 && day <= 13) return 'th';
+    switch (day % 10) {
+      case 1:
+        return 'st';
+      case 2:
+        return 'nd';
+      case 3:
+        return 'rd';
+      default:
+        return 'th';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final Set<String> groupNames =
@@ -40,12 +59,33 @@ class _TransactionFilterWidgetState extends State<TransactionFilterWidget> {
                 side: BorderSide(
                     color: isPaid ? Colors.green : Colors.red, width: 2)),
             title: Text(
-              'Mark As ${!isPaid ? 'Paid' : 'Unpaid'}',
+              'Details',
               style: AppTextStyles.kTransactionTitleTextStyle,
             ),
-            content: Text(
-              '${isPaid ? 'You Didn\'t' : 'Did you'} paid \$${(transaction.amount / transaction.members.length).toStringAsFixed(2)} to ${transaction.createdBy.userName}?',
-              style: AppTextStyles.kTransactionSubtitleTextStyle,
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  transaction.amount.toString(),
+                  style: AppTextStyles.kTransactionSubtitleTextStyle,
+                ),
+                Text(
+                  transaction.category,
+                  style: AppTextStyles.kTransactionSubtitleTextStyle,
+                ),
+                Text(
+                  transaction.createdBy.userName,
+                  style: AppTextStyles.kTransactionSubtitleTextStyle,
+                ),
+                Text(
+                  transaction.dateTime.toString(),
+                  style: AppTextStyles.kTransactionSubtitleTextStyle,
+                ),
+                Text(
+                  '${isPaid ? 'You Didn\'t' : 'Did you'} pay \$${(transaction.amount / transaction.members.length).toStringAsFixed(2)} to ${transaction.createdBy.userName}?',
+                  style: AppTextStyles.kTransactionSubtitleTextStyle,
+                ),
+              ],
             ),
             actions: [
               TextButton(
@@ -103,7 +143,7 @@ class _TransactionFilterWidgetState extends State<TransactionFilterWidget> {
                     padding: const EdgeInsets.symmetric(horizontal: 2.0),
                     child: Text(
                       'All',
-                      style: AppTextStyles.kTransactionSubtitleTextStyle,
+                      style: AppTextStyles.kTransactionLargerSubtitleTextStyle,
                     ),
                   ),
                   selected: widget.selectedGroup == 'All',
@@ -123,7 +163,8 @@ class _TransactionFilterWidgetState extends State<TransactionFilterWidget> {
                       label: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 2.0),
                         child: Text(groupName,
-                            style: AppTextStyles.kTransactionSubtitleTextStyle),
+                            style: AppTextStyles
+                                .kTransactionLargerSubtitleTextStyle),
                       ),
                       selected: widget.selectedGroup == groupName,
                       onSelected: (isSelected) {
@@ -164,6 +205,7 @@ class _TransactionFilterWidgetState extends State<TransactionFilterWidget> {
                       child: MyTransactionTile(
                         isPaid: isPaid,
                         transaction: transaction,
+                        formatDate: formatDate,
                       ),
                     );
                   }
@@ -179,9 +221,23 @@ class _TransactionFilterWidgetState extends State<TransactionFilterWidget> {
 }
 
 class MyTransactionTile extends StatelessWidget {
-  const MyTransactionTile({super.key, this.transaction, this.isPaid});
+  const MyTransactionTile(
+      {super.key, this.transaction, this.isPaid, this.formatDate});
   final transaction;
   final isPaid;
+  final formatDate;
+
+  String _getPaidMembers(Map<String, dynamic> members) {
+    // Extract members whose 'isPaid' is true
+    final paidMembers = members.entries
+        .where((member) => member.value['isPaid'] == true)
+        .map((member) => member.value['displayName'])
+        .toList();
+
+    // Join the names with commas and return the string
+    return paidMembers.join(', ');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -195,67 +251,81 @@ class MyTransactionTile extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Center(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Container(
-                  decoration: BoxDecoration(
-                      border: Border.all(
-                        color: isPaid ? Colors.green : Colors.red,
-                        width: 2,
-                      ),
-                      shape: BoxShape.circle),
-                  width: 50.w,
-                  height: 50.h,
-                  child: ContactCircleAvatar(
-                    contact: transaction.createdBy,
-                    isFirebaseContact: true,
-                  )),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  RichText(
-                      text: TextSpan(children: [
-                    TextSpan(
-                      text: transaction.title,
-                      style: AppTextStyles.kTransactionTitleTextStyle,
-                    ),
-                    TextSpan(
-                        text: '\n${transaction.createdBy.userName} paid for\n',
-                        style: AppTextStyles.kTransactionSubtitleTextStyle),
-                    TextSpan(
-                        text:
-                            '${transaction.dateTime.toLocal().day}, ${DateFormat('MMMM').format(transaction.dateTime.toLocal())} ${transaction.dateTime.toLocal().year}',
-                        style: AppTextStyles.kTransactionSubtitleTextStyle),
-                  ])),
-                ],
-              ),
-              Column(
-                children: [
-                  Container(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Container(
                     decoration: BoxDecoration(
-                        color: isPaid
-                            ? Colors.greenAccent
-                            : Colors.redAccent.withOpacity(0.4),
+                        border: Border.all(
+                          color: isPaid ? Colors.green : Colors.red,
+                          width: 2,
+                        ),
+                        shape: BoxShape.circle),
+                    width: 50.w,
+                    height: 50.h,
+                    child: ContactCircleAvatar(
+                      contact: transaction.createdBy,
+                      isFirebaseContact: true,
+                    )),
+                SizedBox(
+                  width: 12.w,
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: transaction.title,
+                            style: AppTextStyles.kTransactionTitleTextStyle,
+                          ),
+                          TextSpan(
+                            text:
+                                '\n${_getPaidMembers(transaction.members)} paid on\n',
+                            style: AppTextStyles.kTransactionSubtitleTextStyle,
+                          ),
+                          TextSpan(
+                            text: formatDate(transaction.dateTime.toLocal()),
+                            style: AppTextStyles.kTransactionSubtitleTextStyle,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                Spacer(),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: AppColors.kAuthTextFieldColor,
                         borderRadius: BorderRadius.circular(12.r),
                         border: Border.all(
                           color: isPaid ? Colors.green : Colors.red,
-                          width: 3,
-                        )),
-                    padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-                    child: Text(
-                      isPaid ? 'Paid' : 'UnPaid',
-                      style: AppTextStyles.poppins.copyWith(
-                          color: isPaid ? Colors.green : Colors.red,
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.bold),
+                          width: 2,
+                        ),
+                      ),
+                      padding: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                      child: Text(
+                        isPaid ? 'Paid' : 'UnPaid',
+                        style: AppTextStyles.poppins.copyWith(
+                            color: isPaid ? Colors.green : Colors.red,
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.bold),
+                      ),
                     ),
-                  ),
-                  Text('\$${transaction.amount.toStringAsFixed(2)}',
-                      style: AppTextStyles.kTransactionTitleTextStyle),
-                ],
-              )
-            ],
+                    SizedBox(height: 4),
+                    Text('\$${transaction.amount.toStringAsFixed(2)}',
+                        style: AppTextStyles.kTransactionTitleTextStyle),
+                  ],
+                )
+              ],
+            ),
           ),
         ),
       ),
